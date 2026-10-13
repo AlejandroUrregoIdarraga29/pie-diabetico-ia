@@ -1,0 +1,35 @@
+# Entornos virtuales
+/pie_diabetico_env/
+/.venv/
+/venv/
+/env/
+
+# Archivos temporales de Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Variables y credenciales locales
+.env
+.env.*
+!.env.example
+
+# Pesos de modelos entrenados
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.hdf5
+*.keras
+*.onnx
+
+# Datos de entrenamiento
+/wound-segmentation/data/
+
+# Resultados generados
+/resultados/
+
+# Archivos del sistema
+Thumbs.db
+.DS_Store

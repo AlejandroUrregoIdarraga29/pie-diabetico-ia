@@ -1,0 +1,3 @@
+[submodule "wound-segmentation"]
+	path = wound-segmentation
+	url = https://github.com/uwm-bigdata/wound-segmentation.git
