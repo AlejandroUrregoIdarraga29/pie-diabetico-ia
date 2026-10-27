@@ -4,24 +4,12 @@ import json
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-
 # ==========================================================
-# CONFIGURACIÓN GENERAL
+# CONFIGURACIÓN GENERAL (Importada desde config.py)
 # ==========================================================
+from config import DATA_DIR as BASE_DIR, MODELOS_DIR, RESULTADOS_DIR, asegurar_carpetas
 
-BASE_DIR = Path(
-    r"C:\Users\alejo\pie_diabetico_ia\wound-segmentation\data\Foot Ulcer Segmentation Challenge"
-)
-
-PROYECTO_DIR = Path(
-    r"C:\Users\alejo\pie_diabetico_ia"
-)
-
-MODELOS_DIR = PROYECTO_DIR / "modelos"
-RESULTADOS_DIR = PROYECTO_DIR / "resultados"
-
-MODELOS_DIR.mkdir(exist_ok=True)
-RESULTADOS_DIR.mkdir(exist_ok=True)
+asegurar_carpetas()
 
 IMG_HEIGHT = 256
 IMG_WIDTH = 256

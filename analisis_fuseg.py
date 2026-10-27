@@ -10,12 +10,9 @@ import matplotlib.pyplot as plt
 # RUTAS
 # ==========================================================
 
-BASE_DIR = Path(
-    r"C:\Users\alejo\pie_diabetico_ia\wound-segmentation\data\Foot Ulcer Segmentation Challenge"
-)
+from config import DATA_DIR as BASE_DIR
 
-SALIDA = Path(r"C:\Users\alejo\pie_diabetico_ia")
-
+SALIDA = Path.home()
 
 # ==========================================================
 # FUNCIÓN PARA LISTAR IMÁGENES

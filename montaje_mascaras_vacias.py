@@ -1,10 +1,7 @@
 from pathlib import Path
 import cv2
 import matplotlib.pyplot as plt
-
-BASE_DIR = Path(
-    r"C:\Users\alejo\pie_diabetico_ia\wound-segmentation\data\Foot Ulcer Segmentation Challenge"
-)
+from config import DATA_DIR as BASE_DIR, REPORTS_DIR
 
 train_vacias = [
     "0092.png", "0131.png", "0223.png", "0281.png", "0335.png",
@@ -42,9 +39,7 @@ plt.suptitle(
 
 plt.tight_layout()
 
-salida = Path(
-    r"C:\Users\alejo\pie_diabetico_ia\mascaras_vacias_revision.png"
-)
+salida = REPORTS_DIR / "mascaras_vacias_revision.png"
 
 plt.savefig(
     salida,
