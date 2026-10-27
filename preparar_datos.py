@@ -3,15 +3,12 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
+from config import DATA_DIR as BASE_DIR
 
 
 # ==========================================================
 # CONFIGURACIÓN
 # ==========================================================
-
-BASE_DIR = Path(
-    r"C:\Users\alejo\pie_diabetico_ia\wound-segmentation\data\Foot Ulcer Segmentation Challenge"
-)
 
 IMG_HEIGHT = 512
 IMG_WIDTH = 512
