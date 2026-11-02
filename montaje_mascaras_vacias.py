@@ -1,7 +1,8 @@
-from pathlib import Path
 import cv2
 import matplotlib.pyplot as plt
-from config import DATA_DIR as BASE_DIR, REPORTS_DIR
+from config import DATA_DIR as BASE_DIR, REPORTS_DIR, asegurar_carpetas
+
+asegurar_carpetas()
 
 train_vacias = [
     "0092.png", "0131.png", "0223.png", "0281.png", "0335.png",
@@ -26,6 +27,8 @@ for ax, (conjunto, nombre) in zip(axes.flat, casos):
     ruta = BASE_DIR / conjunto / "images" / nombre
 
     imagen = cv2.imread(str(ruta))
+    if imagen is None:
+        raise SystemExit(f"ERROR: no se pudo leer {ruta}")
     imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
 
     ax.imshow(imagen)
