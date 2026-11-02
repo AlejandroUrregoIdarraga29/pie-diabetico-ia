@@ -11,10 +11,11 @@ DATA_DIR = (
 # Salidas (no se versionan)
 MODELOS_DIR = REPO_DIR / "modelos"
 RESULTADOS_DIR = REPO_DIR / "resultados"
+REPORTS_DIR = REPO_DIR / "reports"
 
 
 def asegurar_carpetas():
-    for carpeta in (MODELOS_DIR, RESULTADOS_DIR):
+    for carpeta in (MODELOS_DIR, RESULTADOS_DIR, REPORTS_DIR):
         carpeta.mkdir(parents=True, exist_ok=True)
 
 
@@ -30,3 +31,7 @@ def exigir_archivos(carpeta, patron="*.png"):
         raise SystemExit(f"ERROR: 0 archivos {patron} en {carpeta}")
     print(f"{carpeta}: {len(archivos)} archivos")
     return archivos
+
+def binarizar(mascara):
+    """Criterio único: cualquier píxel > 0 es úlcera (incluye el borde de la 0233)."""
+    return (mascara > 0).astype("uint8")

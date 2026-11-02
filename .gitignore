@@ -30,6 +30,9 @@ __pycache__/
 # Resultados generados
 /resultados/
 
+# reportes generados
+/reports/
+
 # Archivos del sistema
 Thumbs.db
 .DS_Store
