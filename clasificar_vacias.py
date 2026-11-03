@@ -1,4 +1,5 @@
 """A2: clasificación visual de las imágenes con máscara vacía. Ejecutar desde la raíz."""
+import argparse
 import csv
 from collections import Counter
 
@@ -7,7 +8,13 @@ import matplotlib.pyplot as plt
 
 from config import DATA_DIR, REPO_DIR, exigir_archivos
 
-SALIDA = REPO_DIR / "docs" / "clasificacion_vacias.csv"
+# Argumento para permitir un archivo CSV independiente por revisor
+parser = argparse.ArgumentParser()
+parser.add_argument("--revisor", default="", help="Nombre del revisor para sufijo del CSV")
+args = parser.parse_args()
+sufijo = f"_{args.revisor}" if args.revisor else ""
+SALIDA = REPO_DIR / "docs" / f"clasificacion_vacias{sufijo}.csv"
+
 OPCIONES = {
     "1": "sin_ulcera_visible",
     "2": "ulcera_sin_anotar",
