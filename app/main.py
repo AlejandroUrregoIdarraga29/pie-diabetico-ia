@@ -4,6 +4,10 @@ from datetime import datetime
 from app.config import settings
 from app.models.schemas import SessionResponse, DecisionCreate
 from app.services.interfaces import MockSegmenter, MockCommandEmitter
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
 
 app = FastAPI(title="Pie Diabético IA - API Web", version="1.0.0")
 
@@ -17,7 +21,7 @@ async def create_session(
     file: UploadFile = File(...)
 ):
     contents = await file.read()
-    mask, area_px = segmenter.predict(contents)
+    mask, area_px, overlay_b64 = segmenter.predict(contents)
     session_id = f"SES-{uuid.uuid4().hex[:8].upper()}"
     
     session_data = {
@@ -26,7 +30,8 @@ async def create_session(
         "created_at": datetime.now(),
         "area_pixels": area_px,
         "status": "PENDING",
-        "decision": None
+        "decision": None,
+        "overlay_image": overlay_b64
     }
     sessions_db[session_id] = session_data
     return session_data
@@ -59,3 +64,10 @@ def system_status():
         "use_mocks": settings.USE_MOCKS,
         "system": "ONLINE"
     }
+    
+# Montar archivos estáticos
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+@app.get("/")
+def serve_index():
+    return FileResponse("app/templates/index.html")

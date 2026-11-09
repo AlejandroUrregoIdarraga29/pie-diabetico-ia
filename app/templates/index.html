@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pie Diabético IA - Control Clínico</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Topbar & Emergency Stop -->
+    <header class="topbar">
+        <div class="logo">
+            <h2>PieDiabético<span>IA</span></h2>
+        </div>
+        <div class="system-status">
+            <span class="badge" id="heartbeat-badge">💓 Sistema Activo</span>
+            <span class="badge" id="esp32-badge">📡 ESP32: Conectado</span>
+        </div>
+        <button id="btn-emergency-stop" class="btn btn-danger">🚨 DETENER SISTEMA</button>
+    </header>
+
+    <main class="container">
+        <!-- Subida y Selección de Imagen -->
+        <section class="card">
+            <h3>1. Captura de Úlcera</h3>
+            <form id="upload-form" class="upload-zone">
+                <input type="text" id="patient-code" placeholder="Código Paciente (ej. PAC-84920)" required>
+                <input type="file" id="image-file" accept="image/*" capture="environment" required>
+                <button type="submit" class="btn btn-primary">Procesar con U-Net</button>
+            </form>
+        </section>
+
+        <!-- Visualización Overlay y Resultados -->
+        <section class="card" id="results-card" style="display: none;">
+            <h3>2. Validación de Segmentación</h3>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <span class="label">Área Relativa Estimada:</span>
+                    <span class="value" id="area-val">0 px</span>
+                </div>
+                <div class="metric-box">
+                    <span class="label">Estado de la Sesión:</span>
+                    <span class="value" id="session-status">Pendiente</span>
+                </div>
+            </div>
+
+            <div class="viewer-container">
+                <div class="image-wrapper">
+                    <h4>Vista Segmentada (Overlay U-Net)</h4>
+                    <div id="image-overlay-box" class="overlay-box">
+                        <img id="preview-img" src="" alt="Previsualización">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Validación y Parámetros -->
+            <form id="decision-form" class="decision-zone">
+                <h4>Parámetros y Confirmación</h4>
+                
+                <div class="form-group">
+                    <label for="threshold-range">Umbral de Binarización: <strong id="threshold-val">0.50</strong></label>
+                    <input type="range" id="threshold-range" min="0.30" max="0.70" step="0.05" value="0.50">
+                    <small>Límites de seguridad permitidos: [0.30 - 0.70]</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="doctor-notes">Notas Clínicas:</label>
+                    <textarea id="doctor-notes" rows="3" placeholder="Escriba sus observaciones sobre la lesión..."></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" id="btn-approve" class="btn btn-success">✅ Aprobar Segmentación</button>
+                    <button type="button" id="btn-reject" class="btn btn-warning">❌ Rechazar Segmentación</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
