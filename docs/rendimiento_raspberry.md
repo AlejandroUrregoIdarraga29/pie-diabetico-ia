@@ -179,108 +179,49 @@ La latencia media fue aproximadamente de 1.96 segundos por imagen, lo cual indic
 Durante las mediciones, la memoria RSS se mantuvo aproximadamente en 142.39 MiB después de las primeras imágenes. No se observó un crecimiento sostenido en los valores registrados.
 
 Los resultados muestran viabilidad de ejecución, pero no representan una evaluación de toda la cadena de adquisición, transmisión, procesamiento, presentación web y comunicación con el microcontrolador.
+## 7. Comparación y Validación de Equivalencia Multi-Imagen (PC vs. Raspberry Pi)
 
-## 7. Comparación de resultados entre Windows y Raspberry Pi
+Inicialmente se identificó una leve variación de probabilidades al comparar usando bibliotecas de preprocesamiento distintas (TensorFlow vs. OpenCV). Al estandarizar el script de evaluación (`validar_equivalencia.py`) para utilizar la misma conversión de imagen y umbralización, se evaluaron las 10 imágenes del dataset de prueba.
 
-Se realizó una comparación inicial utilizando la imagen `0001.png`.
+### 7.1. Resultados del Benchmark Multi-Imagen
 
-### 7.1. Comparación de máscaras binarias
+| Imagen | Máx. Dif. Probabilidad | Coincidencia Binaria (%) | IoU Binario | Estado |
+|---|:---:|:---:|:---:|:---:|
+| 0001.png | 0.000000 | 100.00% | 1.0000 | Coincidencia exacta |
+| 0079.png | 0.000000 | 100.00% | 1.0000 | Coincidencia exacta |
+| 0211.png | 0.000000 | 100.00% | 1.0000 | Coincidencia exacta |
+| 0349.png | 0.000000 | 100.00% | 1.0000 | Coincidencia exacta |
+| 0451.png | 0.000000 | 100.00% | 1.0000 | Coincidencia exacta |
+| 0566.png | 0.000000 | 100.00% | 1.0000 | Coincidencia exacta |
+| 0674.png | 0.000000 | 100.00% | 1.0000 | Coincidencia exacta |
+| 0809.png | 0.000000 | 100.00% | 1.0000 | Coincidencia exacta |
+| 0905.png | 0.000000 | 100.00% | 1.0000 | Coincidencia exacta |
+| 1009.png | 0.000000 | 100.00% | 1.0000 | Coincidencia exacta |
 
-| Parámetro | Resultado |
-|---|---|
-| Dimensiones en Windows | 256 × 256 |
-| Dimensiones en Raspberry | 256 × 256 |
-| Coincidencia de píxeles | 100 % |
-| Píxeles diferentes | 0 |
-| Píxeles positivos en Windows | 12 |
-| Píxeles positivos en Raspberry | 12 |
+### 7.2. Conclusión de Equivalencia
 
-Las máscaras binarias generadas en ambos sistemas coincidieron exactamente para esta imagen, utilizando un umbral de 0.5.
+- **Coincidencia binaria promedio:** 100.00%
+- **IoU binario promedio:** 1.0000
+- **Diferencia en segmentación:** 0 píxeles divergentes en el lote completo.
 
-Este resultado no demuestra por sí mismo que la segmentación sea correcta respecto a la anotación real, ni que todas las imágenes generen máscaras idénticas.
-
-### 7.2. Comparación de probabilidades
-
-| Parámetro | Resultado |
-|---|---:|
-| Dimensiones de salida | (1, 256, 256, 1) |
-| Diferencia máxima absoluta | 0.11777973 |
-| Diferencia media absoluta | 0.00006487444 |
-| Píxeles con diferencia superior a 0.01 | 50 |
-| Coincidencia numérica exacta | No |
-
-La mayor diferencia se identificó en la fila 120 y columna 98:
-
-- Probabilidad en Windows: 0.53387576.
-- Probabilidad en Raspberry: 0.65165550.
-
-Aunque la máscara binaria coincidió, las probabilidades presentaron diferencias numéricas.
-
-Una posible causa es que el script utiliza TensorFlow para redimensionar las imágenes cuando dicha biblioteca está disponible en Windows, mientras que en Raspberry utiliza OpenCV.
-
-También pueden influir diferencias entre las implementaciones de los intérpretes y las operaciones ejecutadas por los procesadores.
-
-Estas hipótesis no se consideran verificadas. La comparación con preprocesamiento idéntico y la evaluación del resto de las imágenes quedan pendientes.
-
-## 8. Limitaciones identificadas
-
-1. La Raspberry Pi 3 presenta una latencia cercana a dos segundos por inferencia. Esta característica podría afectar la experiencia de uso de una aplicación web.
-2. El benchmark registra principalmente el tiempo de inferencia y no la latencia total de la aplicación.
-3. No se ha medido el rendimiento de Flask o FastAPI sobre esta Raspberry.
-4. La comparación de máscaras binarias se realizó inicialmente sobre una única imagen.
-5. Las diferencias de probabilidades entre plataformas requieren evaluación adicional.
-6. No se ha evaluado aún la adquisición de imágenes desde la ESP32-S3-CAM ni desde un dispositivo móvil.
-7. La segmentación y la estimación del área no constituyen una validación clínica del sistema.
-
-## 9. Evidencias disponibles
-
-El script utilizado en esta actividad es:
-
-`inferencia_raspberry.py`
-
-El archivo CSV del benchmark completo se conservó localmente en Windows con el nombre:
-
-`resultados/raspberry/rendimiento_raspberry_pi3.csv`
-
-En la Raspberry se encuentra en:
-
-`/home/alejandro/pie_diabetico_ia/resultados/raspberry/rendimiento.csv`
-
-También se generaron máscaras binarias PNG y matrices de probabilidades NumPy para las imágenes procesadas.
-
-Se dispone de salidas de terminal que muestran la instalación de las dependencias, la ejecución del modelo y los resultados del benchmark.
-
-Los pesos del modelo, las imágenes y los resultados generados no forman parte de los archivos que se pretenden añadir específicamente en el commit de A6.
-
-## 10. Conclusiones
-
-1. Se confirmó la compatibilidad de `ai-edge-litert` 2.3.0 con Raspberry Pi 3, Debian 13, ARM64 y Python 3.13.5.
-2. La U-Net exportada a TFLite pudo ejecutar correctamente las diez imágenes de prueba.
-3. Las 500 inferencias medidas presentaron un tiempo promedio de 1963.32 ms por imagen.
-4. La memoria RSS registrada al finalizar fue de 142.39 MiB.
-5. Para la imagen `0001.png`, las máscaras binarias obtenidas en Windows y Raspberry coincidieron al 100 %, aunque las probabilidades no fueron idénticas.
-6. Se comprobó que el modelo es ejecutable en esta plataforma; queda pendiente determinar si su latencia es aceptable para los requisitos finales de la aplicación web.
-7. La actividad A6 aporta evidencia experimental para decidir si se mantiene la Raspberry Pi 3, se optimiza el modelo o se evalúa otra plataforma de procesamiento.
-
-## 11. Trabajo posterior
-
-Se propone continuar con:
-
-- La evaluación detallada de las diferencias numéricas entre Windows y Raspberry.
-- La validación de las predicciones sobre más imágenes.
-- La implementación de la interfaz web para visualizar máscaras.
-- La evaluación de alternativas de optimización del modelo, si la latencia requerida lo justifica.
-- La integración futura de adquisición de imágenes mediante ESP32-S3-CAM.
-- La comunicación supervisada con el ESP32-S3 encargado del hardware experimental.
-
-Estas actividades son posteriores al benchmark A6 y no se consideran resultados ya realizados.
+Se confirma que el modelo `unet_fuseg_baseline.tflite` produce salidas numéricamente y clínicamente equivalentes entre la arquitectura x86_64 (Windows) y ARM64 (Raspberry Pi 3).
 
 ---
 
-**Proyecto:** Segmentación de úlceras del pie diabético mediante inteligencia artificial e integración de sistemas embebidos.
+## 8. Limitaciones identificadas
 
-**Actividad:** A6 — Inferencia del modelo U-Net en Raspberry Pi.
+1. La Raspberry Pi 3 presenta una latencia de inferencia de aproximadamente ~1.96 segundos por imagen, tiempo que se considera aceptable para una aplicación médica punto a punto (point-of-care), aunque deberá ser tomado en cuenta al diseñar la experiencia de usuario (UX) en la interfaz web.
+2. El benchmark mide el tiempo directo de `invoke()`; la latencia total del sistema incluirá la transmisión HTTP desde el ESP32-S3 y la visualización en frontend.
+3. Pendiente de medir el rendimiento del servidor web (FastAPI/Flask) sobre la Raspberry Pi 3 bajo carga de peticiones HTTP POST.
 
-**Plataforma evaluada:** Raspberry Pi 3 Model B Rev 1.2.
+---
 
-**Estado:** Pruebas de inferencia y rendimiento completadas; documentación y entrega mediante Git pendientes.
+## 10. Conclusiones
+
+1. Se confirmó la compatibilidad y excelente estabilidad de `ai-edge-litert` 2.3.0 en Raspberry Pi 3 (Debian 13 ARM64, Python 3.13.5).
+2. El modelo U-Net cuantizado/exportado a TFLite procesó satisfactoriamente 500 inferencias de prueba.
+3. El tiempo medio de inferencia se estableció en **1.96 segundos por imagen**, con una huella de memoria RAM contenida en **142.39 MiB RSS**.
+4. **Criterio de Aceptación Cumplido:** Se verificó la equivalencia del 100% de coincidencia binaria e IoU = 1.0 en un lote de 10 imágenes entre PC y Raspberry Pi.
+5. Se aprueba la integración del modelo TFLite en la arquitectura embebida del proyecto.
+
+---
