@@ -17,7 +17,7 @@ Sistema que segmenta úlceras de pie diabético con una red **U-Net**, permite a
 3. [Diagrama de secuencia](#3-diagrama-de-secuencia)
 4. [Modelo de IA (U-Net)](#4-modelo-de-ia-u-net)
 5. [Aplicación web](#5-aplicación-web)
-6. [Modelo de datos]
+6. [Modelo de datos](#6-Modelo-de-datos) 
 7. [Instrucciones para ejecutar el proyecto](#6-instrucciones-para-ejecutar-el-proyecto)
 8. [Metodología de trabajo](#7-metodología-de-trabajo)
 9. [Historial de tareas](#8-historial-de-tareas)
