@@ -17,12 +17,13 @@ Sistema que segmenta úlceras de pie diabético con una red **U-Net**, permite a
 3. [Diagrama de secuencia](#3-diagrama-de-secuencia)
 4. [Modelo de IA (U-Net)](#4-modelo-de-ia-u-net)
 5. [Aplicación web](#5-aplicación-web)
-6. [Instrucciones para ejecutar el proyecto](#6-instrucciones-para-ejecutar-el-proyecto)
-7. [Metodología de trabajo](#7-metodología-de-trabajo)
-8. [Historial de tareas](#8-historial-de-tareas)
-9. [Tecnologías](#9-tecnologías)
-10. [Estado actual y limitaciones](#10-estado-actual-y-limitaciones)
-11. [Trabajo futuro](#11-trabajo-futuro)
+6. [Modelo de datos]
+7. [Instrucciones para ejecutar el proyecto](#6-instrucciones-para-ejecutar-el-proyecto)
+8. [Metodología de trabajo](#7-metodología-de-trabajo)
+9. [Historial de tareas](#8-historial-de-tareas)
+10. [Tecnologías](#9-tecnologías)
+11. [Estado actual y limitaciones](#10-estado-actual-y-limitaciones)
+12. [Trabajo futuro](#11-trabajo-futuro)
 
 ---
 
@@ -122,7 +123,39 @@ Características de la interfaz:
 - Diseño responsivo y paleta tomada del logo (azul marino, azul cielo y naranja).
 - Indicadores de estado del sistema y del ESP32.
 
-## 6. Instrucciones para ejecutar el proyecto
+## 6. Modelo de datos
+
+La API persiste las sesiones clínicas con SQLAlchemy. Cada sesión guarda el paciente (código anónimo), el resultado de la segmentación y la decisión del médico.
+
+```mermaid
+erDiagram
+    SESSIONS {
+        string session_id PK
+        string patient_code
+        datetime created_at
+        int area_pixels
+        string status
+        string overlay_image
+        string decision
+        float threshold
+        string notes
+    }
+```
+
+| Campo | Descripción |
+| --- | --- |
+| `session_id` | Identificador único de la sesión |
+| `patient_code` | Código anónimo del paciente (ADR-002), sin nombres |
+| `area_pixels` | Área segmentada en píxeles |
+| `status` | Estado de la sesión (por ejemplo `PENDING`) |
+| `overlay_image` | Ruta de la imagen con la segmentación superpuesta |
+| `decision` | `APPROVED` o `REJECTED` (nulo hasta que el médico decide) |
+| `threshold` | Umbral de binarización usado, entre 0.30 y 0.70 |
+| `notes` | Notas clínicas del médico |
+
+Esquemas de la API (`app/models/schemas.py`): `SessionCreate` (entrada de la captura), `DecisionCreate` (decisión, umbral y notas) y `SessionResponse` (respuesta con área, estado y overlay).
+
+## 7. Instrucciones para ejecutar el proyecto
 
 Requisitos: Python 3.12 y Git.
 
@@ -148,7 +181,7 @@ Pruebas:
 pytest tests/
 ```
 
-## 7. Metodología de trabajo
+## 8. Metodología de trabajo
 
 Flujo por tarea, una rama por cada una:
 
@@ -159,7 +192,7 @@ Flujo por tarea, una rama por cada una:
 5. Pull Request y merge a `main`.
 6. Actualizar Trello y pasar a la siguiente tarea.
 
-## 8. Historial de tareas
+## 9. Historial de tareas
 
 ### Carril A: modelo e IA
 
@@ -181,7 +214,7 @@ Flujo por tarea, una rama por cada una:
 | W2 | `feature/w2-frontend-ui` | Interfaz para previsualizar el overlay, ajustar el umbral y enviar la aprobación o el rechazo | `app/templates/index.html`, `app/static/css/style.css`, `app/static/js/app.js` |
 | W3 | `feature/w3-frontend` | Mejoramiento del frontend: identidad visual Nova Luz, pantalla de carga, encabezado fijo con parada de emergencia y diseño responsivo | `index.html`, `style.css`, `static/img/logo.jpeg` |
 
-## 9. Tecnologías
+## 10. Tecnologías
 
 | Área | Herramientas |
 | --- | --- |
@@ -193,14 +226,14 @@ Flujo por tarea, una rama por cada una:
 | Frontend | HTML5, CSS3, JavaScript (Fetch API), Canvas API |
 | Documentación | Markdown, Mermaid, ADR |
 
-## 10. Estado actual y limitaciones
+## 11. Estado actual y limitaciones
 
 - **La segmentación de la web usa un servicio simulado** (`MockSegmentationService`): devuelve un recuadro fijo y un área constante. La U-Net real ya está exportada y validada en Raspberry Pi, pero aún no está inyectada en la API.
 - El slider de umbral se envía junto con la decisión; todavía no vuelve a segmentar la imagen.
 - El botón de parada de emergencia muestra una alerta; falta conectarlo al backend y al ESP32.
 - El área se mide en píxeles de la imagen redimensionada, sin escala real (cm/píxel).
 
-## 11. Trabajo futuro
+## 12. Trabajo futuro
 
 - Inyectar `LiteRTSegmentationService` en lugar del servicio simulado.
 - Endpoint para re-segmentar con el umbral elegido.
