@@ -2,37 +2,79 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pie Diabético IA - Control Clínico</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a3a6e">
+    <title>Nova Luz - Control Clínico</title>
+    <link rel="icon" href="/static/img/logo.jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
-    <!-- Topbar & Emergency Stop -->
+<body class="is-loading">
+
+    <!-- Pantalla de carga con logo -->
+    <div id="splash" class="splash" aria-hidden="true">
+        <div class="splash-inner">
+            <img src="/static/img/logo.jpeg" alt="" class="splash-logo">
+            <div class="splash-bar"><span></span></div>
+            <p class="splash-text">Iniciando sistema de control clínico</p>
+        </div>
+    </div>
+
+    <!-- Header fijo + parada de emergencia siempre visible -->
     <header class="topbar">
         <div class="logo">
-            <h2>PieDiabético<span>IA</span></h2>
+            <span class="brand-mark" role="img" aria-label="Logo Nova Luz"></span>
+            <div class="brand-text">
+                <h2>Nova <span>Luz</span></h2>
+                <small>Control clínico · Pie diabético IA</small>
+            </div>
         </div>
         <div class="system-status">
-            <span class="badge" id="heartbeat-badge">💓 Sistema Activo</span>
-            <span class="badge" id="esp32-badge">📡 ESP32: Conectado</span>
+            <span class="badge badge-ok" id="heartbeat-badge">💓 Sistema Activo</span>
+            <span class="badge badge-ok" id="esp32-badge">📡 ESP32: Conectado</span>
         </div>
-        <button id="btn-emergency-stop" class="btn btn-danger">🚨 DETENER SISTEMA</button>
+        <button id="btn-emergency-stop" class="btn btn-danger btn-stop" type="button">
+            <span class="stop-icon">🚨</span><span class="stop-label">DETENER SISTEMA</span>
+        </button>
     </header>
 
     <main class="container">
+
+        <!-- Encabezado de flujo -->
+        <section class="hero">
+            <div>
+                <h1>Panel de decisión clínica</h1>
+                <p>Sube la imagen, valida la segmentación de la U-Net y decide si el ESP32 inicia la estimulación.</p>
+            </div>
+            <ol class="stepper">
+                <li class="step active"><span>1</span>Captura</li>
+                <li class="step"><span>2</span>Validación</li>
+                <li class="step"><span>3</span>Decisión</li>
+            </ol>
+        </section>
+
         <!-- Subida y Selección de Imagen -->
         <section class="card">
-            <h3>1. Captura de Úlcera</h3>
+            <h3><span class="h-num">1</span>Captura de Úlcera</h3>
             <form id="upload-form" class="upload-zone">
-                <input type="text" id="patient-code" placeholder="Código Paciente (ej. PAC-84920)" required>
-                <input type="file" id="image-file" accept="image/*" required>
+                <div class="field">
+                    <label for="patient-code">Código del paciente</label>
+                    <input type="text" id="patient-code" placeholder="Código Paciente (ej. PAC-84920)" required>
+                </div>
+                <div class="field">
+                    <label for="image-file">Imagen de la lesión</label>
+                    <input type="file" id="image-file" accept="image/*" required>
+                    <small id="file-name">Ningún archivo seleccionado</small>
+                </div>
                 <button type="submit" class="btn btn-primary">Procesar con U-Net</button>
             </form>
         </section>
 
         <!-- Visualización Overlay y Resultados -->
         <section class="card" id="results-card" style="display: none;">
-            <h3>2. Validación de Segmentación</h3>
+            <h3><span class="h-num">2</span>Validación de Segmentación</h3>
             <div class="metrics-grid">
                 <div class="metric-box">
                     <span class="label">Área Relativa Estimada:</span>
@@ -48,6 +90,7 @@
                 <div class="image-wrapper">
                     <h4>Vista Segmentada (Overlay U-Net)</h4>
                     <div id="image-overlay-box" class="overlay-box">
+                        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
                         <img id="preview-img" src="" alt="Previsualización">
                     </div>
                 </div>
@@ -55,8 +98,8 @@
 
             <!-- Formulario de Validación y Parámetros -->
             <form id="decision-form" class="decision-zone">
-                <h4>Parámetros y Confirmación</h4>
-                
+                <h4><span class="h-num">3</span>Parámetros y Confirmación</h4>
+
                 <div class="form-group">
                     <label for="threshold-range">Umbral de Binarización: <strong id="threshold-val">0.50</strong></label>
                     <input type="range" id="threshold-range" min="0.30" max="0.70" step="0.05" value="0.50">
@@ -74,8 +117,33 @@
                 </div>
             </form>
         </section>
+
+        <footer class="footer">Nova Luz · Sistema Embebido Inteligente para Heridas Crónicas</footer>
     </main>
 
+    <script>
+        // Pantalla de carga: mínimo 1.8 s, luego se oculta
+        (function () {
+            var splash = document.getElementById('splash');
+            var t0 = performance.now();
+            function hide() {
+                var wait = Math.max(0, 1800 - (performance.now() - t0));
+                setTimeout(function () {
+                    splash.classList.add('hide');
+                    document.body.classList.remove('is-loading');
+                    setTimeout(function () { splash.remove(); }, 700);
+                }, wait);
+            }
+            if (document.readyState === 'complete') hide();
+            else window.addEventListener('load', hide);
+        })();
+
+        // Nombre del archivo seleccionado (no interfiere con app.js)
+        document.getElementById('image-file').addEventListener('change', function (e) {
+            var f = e.target.files[0];
+            document.getElementById('file-name').textContent = f ? f.name : 'Ningún archivo seleccionado';
+        });
+    </script>
     <script src="/static/js/app.js"></script>
 </body>
 </html>
