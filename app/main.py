@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 import uuid
 from datetime import datetime
 from app.config import settings
-from app.models.schemas import SessionResponse, DecisionCreate
+from app.models.schemas import SessionResponse, DecisionCreate, ClinicalAssessment
 from app.services.interfaces import MockSegmenter, MockCommandEmitter
 from app.services.litert_segmentation import LiteRTSegmentationService
 from fastapi.staticfiles import StaticFiles
@@ -78,3 +78,45 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 @app.get("/")
 def serve_index():
     return FileResponse("app/templates/index.html")
+
+
+@app.put("/api/v1/sessions/{session_id}/assessment")
+def save_clinical_assessment(
+    session_id: str,
+    assessment: ClinicalAssessment
+):
+    if session_id not in sessions_db:
+        raise HTTPException(
+            status_code=404,
+            detail="Sesión no encontrada"
+        )
+
+    sessions_db[session_id]["clinical_assessment"] = assessment.model_dump()
+
+    return {
+        "message": "Valoración clínica registrada correctamente",
+        "session_id": session_id,
+        "clinical_assessment": sessions_db[session_id]["clinical_assessment"]
+    }
+
+
+@app.get("/api/v1/sessions/{session_id}/assessment")
+def get_clinical_assessment(session_id: str):
+    if session_id not in sessions_db:
+        raise HTTPException(
+            status_code=404,
+            detail="Sesión no encontrada"
+        )
+
+    assessment = sessions_db[session_id].get("clinical_assessment")
+
+    if assessment is None:
+        raise HTTPException(
+            status_code=404,
+            detail="La sesión todavía no tiene valoración clínica"
+        )
+
+    return {
+        "session_id": session_id,
+        "clinical_assessment": assessment
+    }

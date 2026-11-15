@@ -52,3 +52,98 @@ document.getElementById('btn-reject').addEventListener('click', () => sendDecisi
 document.getElementById('btn-emergency-stop').addEventListener('click', () => {
     alert("🚨 PARADA DE EMERGENCIA ENVIADA AL HARDWARE.");
 });
+
+
+
+/* ===== Guardar valoración clínica 2.1 ===== */
+
+
+/* ===== Guardar valoración clínica 2.1 ===== */
+
+document.getElementById('btn-save-assessment').addEventListener('click', async () => {
+    const feedback = document.getElementById('assessment-feedback');
+    const button = document.getElementById('btn-save-assessment');
+    const form = document.getElementById('clinical-form');
+
+    if (!currentSessionId) {
+        feedback.textContent = 'Primero debes procesar una fotografía.';
+        feedback.style.color = '#d9730d';
+        return;
+    }
+
+    const formData = new FormData(form);
+    const assessment = {};
+
+    const numericFields = [
+        'age',
+        'local_temperature_c',
+        'pain_level',
+        'wound_length_mm',
+        'wound_width_mm',
+        'wound_depth_mm',
+        'treatment_duration_days',
+        'treatment_cost'
+    ];
+
+    const booleanFields = [
+        'immunosuppressive_treatment',
+        'necrosis',
+        'surrounding_redness',
+        'maceration'
+    ];
+
+    for (const [key, value] of formData.entries()) {
+        if (value === '') {
+            assessment[key] = null;
+        } else if (numericFields.includes(key)) {
+            assessment[key] = Number(value);
+        } else if (booleanFields.includes(key)) {
+            assessment[key] = value === 'true';
+        } else {
+            assessment[key] = value;
+        }
+    }
+
+    button.disabled = true;
+    feedback.textContent = 'Guardando valoración clínica...';
+    feedback.style.color = '#5b6f87';
+
+    try {
+        const response = await fetch(
+            `/api/v1/sessions/${currentSessionId}/assessment`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(assessment)
+            }
+        );
+
+        if (!response.ok) {
+            let detail = `Error HTTP ${response.status}`;
+            try {
+                const errorData = await response.json();
+                detail += ': ' + JSON.stringify(errorData.detail);
+            } catch (_) {}
+            throw new Error(detail);
+        }
+
+        const result = await response.json();
+
+        feedback.textContent =
+            '✓ Valoración clínica guardada correctamente. Sesión: ' +
+            result.session_id;
+
+        feedback.style.color = '#14884a';
+
+    } catch (error) {
+        feedback.textContent =
+            'No se pudo guardar la valoración: ' + error.message;
+
+        feedback.style.color = '#d92d20';
+
+    } finally {
+        button.disabled = false;
+    }
+});

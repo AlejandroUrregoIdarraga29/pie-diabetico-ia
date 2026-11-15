@@ -286,3 +286,323 @@ input[type="range"]::-moz-range-thumb {
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+
+/* =========================================================
+   NOVA LUZ — VALORACIÓN CLÍNICA 2.1
+   Diseño organizado, adaptable y compatible con Johan
+   ========================================================= */
+
+.clinical-assessment {
+    margin-top: 28px;
+    padding: 24px;
+    background: #f8fbff;
+    border: 1px solid #dce8f5;
+    border-radius: 16px;
+}
+
+.clinical-assessment > h4 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 12px;
+    color: #103d71;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.clinical-assessment > p {
+    margin: 0 0 22px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#clinical-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#clinical-form fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #dde7f2;
+    border-radius: 12px;
+}
+
+#clinical-form legend {
+    padding: 0 10px;
+    color: #124c89;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+#clinical-form .clinical-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 20px;
+}
+
+#clinical-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+    color: #173b65;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+#clinical-form input,
+#clinical-form select,
+#clinical-form textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 43px;
+    margin: 0;
+    padding: 10px 12px;
+    background: #fbfdff;
+    border: 1px solid #cbd9e8;
+    border-radius: 9px;
+    color: #20364e;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#clinical-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+#clinical-form input:focus,
+#clinical-form select:focus,
+#clinical-form textarea:focus {
+    outline: none;
+    border-color: #1674c5;
+    box-shadow: 0 0 0 3px rgba(22, 116, 197, 0.12);
+}
+
+#clinical-form input::placeholder,
+#clinical-form textarea::placeholder {
+    color: #94a3b8;
+}
+
+#clinical-form fieldset > label {
+    margin-top: 16px;
+}
+
+#clinical-form #btn-save-assessment {
+    align-self: flex-start;
+    min-height: 44px;
+    padding: 12px 22px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+#assessment-feedback {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Tabletas */
+@media (max-width: 800px) {
+    .clinical-assessment {
+        padding: 18px;
+    }
+
+    #clinical-form fieldset {
+        padding: 16px;
+    }
+
+    #clinical-form .clinical-grid {
+        gap: 14px;
+    }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+    .clinical-assessment {
+        margin-top: 20px;
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    #clinical-form .clinical-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    #clinical-form fieldset {
+        padding: 14px;
+    }
+
+    #clinical-form #btn-save-assessment {
+        width: 100%;
+    }
+}
+
+
+/* ===== Organización definitiva de los campos clínicos ===== */
+
+#clinical-form .clinical-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+#clinical-form .clinical-field > label {
+    display: block;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #173b65;
+}
+
+#clinical-form .clinical-field > input,
+#clinical-form .clinical-field > select,
+#clinical-form .clinical-field > textarea {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   NOVA LUZ 2.1 — AJUSTE VISUAL DEFINITIVO
+   ===================================================== */
+
+#clinical-assessment {
+    margin: 30px 0;
+    padding: 26px;
+    background: #f5f9ff;
+    border: 1px solid #d8e5f3;
+    border-radius: 18px;
+}
+
+#clinical-assessment #clinical-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+#clinical-assessment #clinical-form fieldset {
+    display: block;
+    min-width: 0;
+    margin: 0;
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #dae5f1;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(10, 58, 110, 0.04);
+}
+
+#clinical-assessment #clinical-form legend {
+    padding: 0 10px;
+    color: #0a3a6e;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+#clinical-assessment #clinical-form .clinical-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+#clinical-assessment #clinical-form .clinical-field {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    min-width: 0;
+}
+
+#clinical-assessment #clinical-form .clinical-field label {
+    display: block;
+    width: 100%;
+    margin: 0;
+    color: #173b65;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+#clinical-assessment #clinical-form .clinical-field input,
+#clinical-assessment #clinical-form .clinical-field select,
+#clinical-assessment #clinical-form .clinical-field textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 11px 13px;
+    margin: 0;
+    border: 1px solid #cbd9e8;
+    border-radius: 10px;
+    background: #f9fbff;
+    color: #20364e;
+    font: 500 14px 'Source Sans 3', sans-serif;
+    box-sizing: border-box;
+}
+
+#clinical-assessment #clinical-form .clinical-field input:focus,
+#clinical-assessment #clinical-form .clinical-field select:focus,
+#clinical-assessment #clinical-form .clinical-field textarea:focus {
+    outline: none;
+    border-color: #1674c5;
+    box-shadow: 0 0 0 3px rgba(22, 116, 197, 0.12);
+}
+
+#clinical-assessment #clinical-form .clinical-field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+#clinical-assessment .clinical-note {
+    margin: 18px 0 0;
+    padding: 12px 14px;
+    background: #edf5ff;
+    border-left: 3px solid #2b8be6;
+    border-radius: 8px;
+    color: #365879;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+#clinical-assessment #btn-save-assessment {
+    align-self: flex-start;
+    padding: 13px 24px;
+    min-height: 46px;
+}
+
+@media (max-width: 650px) {
+    #clinical-assessment {
+        padding: 15px;
+    }
+
+    #clinical-assessment #clinical-form fieldset {
+        padding: 16px;
+    }
+
+    #clinical-assessment #clinical-form .clinical-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    #clinical-assessment #btn-save-assessment {
+        width: 100%;
+    }
+}
+

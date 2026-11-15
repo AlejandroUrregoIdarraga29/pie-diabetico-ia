@@ -95,6 +95,337 @@
                     </div>
                 </div>
             </div>
+            
+<!-- =====================================================
+     2.1 VALORACIÓN INTEGRAL DEL PACIENTE Y DE LA HERIDA
+     ===================================================== -->
+<section class="clinical-assessment" id="clinical-assessment">
+
+    <h4>
+        <span class="h-num">2.1</span>
+        Valoración Integral del Paciente y de la Herida
+    </h4>
+
+    <p>
+        Registre los hallazgos evaluados. Los campos sin información
+        se consideran no evaluados. La segmentación por IA no
+        sustituye la valoración clínica.
+    </p>
+
+    <form id="clinical-form" onsubmit="event.preventDefault();">
+
+        <!-- HISTORIA DEL PACIENTE -->
+        <fieldset>
+            <legend>Historia del paciente y factores sistémicos</legend>
+
+            <div class="clinical-grid">
+
+                <div class="clinical-field">
+                    <label for="ca-age">Edad (años)</label>
+                    <input id="ca-age" name="age" type="number"
+                           min="0" max="120" placeholder="Ej. 65">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-comorbidities">Comorbilidades</label>
+                    <input id="ca-comorbidities" name="comorbidities"
+                           type="text"
+                           placeholder="Antecedentes médicos">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-nutritional">Estado nutricional</label>
+                    <select id="ca-nutritional" name="nutritional_status">
+                        <option value="">No evaluado</option>
+                        <option value="Adecuado">Adecuado</option>
+                        <option value="Riesgo nutricional">Riesgo nutricional</option>
+                        <option value="Desnutrición">Desnutrición</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-immunosuppressive">Tratamiento inmunosupresor</label>
+                    <select id="ca-immunosuppressive"
+                            name="immunosuppressive_treatment">
+                        <option value="">No evaluado</option>
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-stress">Nivel de estrés</label>
+                    <select id="ca-stress" name="stress_level">
+                        <option value="">No evaluado</option>
+                        <option value="Bajo">Bajo</option>
+                        <option value="Moderado">Moderado</option>
+                        <option value="Alto">Alto</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-adherence">Adherencia al tratamiento</label>
+                    <select id="ca-adherence" name="treatment_adherence">
+                        <option value="">No evaluado</option>
+                        <option value="Adecuada">Adecuada</option>
+                        <option value="Parcial">Parcial</option>
+                        <option value="No adecuada">No adecuada</option>
+                    </select>
+                </div>
+
+            </div>
+        </fieldset>
+
+        <!-- VALORACIÓN VASCULAR Y NEUROLÓGICA -->
+        <fieldset>
+            <legend>Evaluación vascular y neurológica</legend>
+
+            <div class="clinical-grid">
+
+                <div class="clinical-field">
+                    <label for="ca-sensitivity">Sensibilidad del pie</label>
+                    <select id="ca-sensitivity" name="sensitivity">
+                        <option value="">No evaluado</option>
+                        <option value="Conservada">Conservada</option>
+                        <option value="Disminuida">Disminuida</option>
+                        <option value="Ausente">Ausente</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-circulation">Evaluación de circulación</label>
+                    <select id="ca-circulation" name="circulation">
+                        <option value="">No evaluado</option>
+                        <option value="Sin alteraciones documentadas">
+                            Sin alteraciones documentadas
+                        </option>
+                        <option value="Alteración sospechada">
+                            Alteración sospechada
+                        </option>
+                        <option value="Alteración confirmada">
+                            Alteración confirmada
+                        </option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-temperature">Temperatura local (°C)</label>
+                    <input id="ca-temperature"
+                           name="local_temperature_c"
+                           type="number" step="0.1"
+                           placeholder="Ej. 35.8">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-pain">Nivel de dolor (0 a 10)</label>
+                    <input id="ca-pain" name="pain_level"
+                           type="number" min="0" max="10"
+                           placeholder="No evaluado">
+                </div>
+
+            </div>
+        </fieldset>
+
+        <!-- CARACTERÍSTICAS DE LA HERIDA -->
+        <fieldset>
+            <legend>Características de la herida</legend>
+
+            <div class="clinical-grid">
+
+                <div class="clinical-field">
+                    <label for="ca-location">Ubicación anatómica</label>
+                    <input id="ca-location" name="wound_location"
+                           type="text"
+                           placeholder="Ej. Talón derecho">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-depth">Profundidad medida (mm)</label>
+                    <input id="ca-depth" name="wound_depth_mm"
+                           type="number" min="0" step="0.1"
+                           placeholder="No medida">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-length">Longitud medida (mm)</label>
+                    <input id="ca-length" name="wound_length_mm"
+                           type="number" min="0" step="0.1"
+                           placeholder="No medida">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-width">Ancho medido (mm)</label>
+                    <input id="ca-width" name="wound_width_mm"
+                           type="number" min="0" step="0.1"
+                           placeholder="No medido">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-bed">Tejido del lecho</label>
+                    <input id="ca-bed" name="wound_bed"
+                           type="text"
+                           placeholder="Granulación, esfacelo, etc.">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-edges">Bordes de la herida</label>
+                    <input id="ca-edges" name="wound_edges"
+                           type="text"
+                           placeholder="Descripción de bordes">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-necrosis">Presencia de necrosis</label>
+                    <select id="ca-necrosis" name="necrosis">
+                        <option value="">No evaluado</option>
+                        <option value="true">Presente</option>
+                        <option value="false">Ausente</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-redness">Enrojecimiento alrededor</label>
+                    <select id="ca-redness" name="surrounding_redness">
+                        <option value="">No evaluado</option>
+                        <option value="true">Presente</option>
+                        <option value="false">Ausente</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-maceration">Maceración de la piel</label>
+                    <select id="ca-maceration" name="maceration">
+                        <option value="">No evaluado</option>
+                        <option value="true">Presente</option>
+                        <option value="false">Ausente</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <p class="clinical-note">
+                Las dimensiones físicas en milímetros deben medirse
+                o calcularse mediante una fotografía calibrada.
+                La U-Net actualmente entrega el área en píxeles.
+            </p>
+        </fieldset>
+
+        <!-- EXUDACIÓN -->
+        <fieldset>
+            <legend>Exudación y olor</legend>
+
+            <div class="clinical-grid">
+
+                <div class="clinical-field">
+                    <label for="ca-exudate-amount">Cantidad de exudado</label>
+                    <select id="ca-exudate-amount" name="exudate_amount">
+                        <option value="">No evaluado</option>
+                        <option value="Ausente">Ausente</option>
+                        <option value="Escasa">Escasa</option>
+                        <option value="Moderada">Moderada</option>
+                        <option value="Abundante">Abundante</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-exudate-type">Tipo de exudado</label>
+                    <select id="ca-exudate-type" name="exudate_type">
+                        <option value="">No evaluado</option>
+                        <option value="Seroso">Seroso</option>
+                        <option value="Sanguinolento">Sanguinolento</option>
+                        <option value="Serosanguinolento">
+                            Serosanguinolento
+                        </option>
+                        <option value="Purulento">Purulento</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-exudate-color">Color del exudado</label>
+                    <input id="ca-exudate-color"
+                           name="exudate_color" type="text"
+                           placeholder="Describa el color">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-exudate-consistency">Consistencia</label>
+                    <input id="ca-exudate-consistency"
+                           name="exudate_consistency" type="text"
+                           placeholder="Describa la consistencia">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-odor">Olor de la herida</label>
+                    <select id="ca-odor" name="odor">
+                        <option value="">No evaluado</option>
+                        <option value="Ausente">Ausente</option>
+                        <option value="Presente">Presente</option>
+                    </select>
+                </div>
+
+            </div>
+        </fieldset>
+
+        <!-- SEGUIMIENTO -->
+        <fieldset>
+            <legend>Valoración y seguimiento</legend>
+
+            <div class="clinical-grid">
+
+                <div class="clinical-field">
+                    <label for="ca-infection">Signos de infección observados</label>
+                    <input id="ca-infection" name="infection_signs"
+                           type="text"
+                           placeholder="Describa los hallazgos">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-classification">Clasificación clínica</label>
+                    <input id="ca-classification"
+                           name="wound_classification"
+                           type="text"
+                           placeholder="Escala y grado documentados">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-duration">Duración del tratamiento (días)</label>
+                    <input id="ca-duration"
+                           name="treatment_duration_days"
+                           type="number" min="0"
+                           placeholder="No registrada">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-cost">Costo del tratamiento (COP)</label>
+                    <input id="ca-cost" name="treatment_cost"
+                           type="number" min="0" step="0.01"
+                           placeholder="No registrado">
+                </div>
+
+            </div>
+
+            <div class="clinical-field" style="margin-top:16px;">
+                <label for="ca-notes">Observaciones clínicas</label>
+                <textarea id="ca-notes" name="clinical_notes"
+                          rows="3"
+                          placeholder="Observaciones verificadas"></textarea>
+            </div>
+        </fieldset>
+
+        <!-- GUARDADO INDEPENDIENTE DEL TRATAMIENTO -->
+        <button type="button"
+                class="btn btn-primary"
+                id="btn-save-assessment">
+            Guardar valoración clínica
+        </button>
+
+        <p id="assessment-feedback"
+           role="status"
+           aria-live="polite"></p>
+
+    </form>
+</section>
+<!-- FIN DE LA SECCIÓN 2.1 -->
 
             <!-- Formulario de Validación y Parámetros -->
             <form id="decision-form" class="decision-zone">
@@ -144,6 +475,6 @@
             document.getElementById('file-name').textContent = f ? f.name : 'Ningún archivo seleccionado';
         });
     </script>
-    <script src="/static/js/app.js"></script>
+    <script src="/static/js/app.js?v=2"></script>
 </body>
 </html>
