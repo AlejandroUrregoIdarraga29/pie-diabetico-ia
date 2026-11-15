@@ -87,15 +87,39 @@
             </div>
 
             <div class="viewer-container">
-                <div class="image-wrapper">
-                    <h4>Vista Segmentada (Overlay U-Net)</h4>
-                    <div id="image-overlay-box" class="overlay-box">
-                        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-                        <img id="preview-img" src="" alt="Previsualización">
-                    </div>
+    <div class="image-wrapper">
+        <h4>Comparación de Segmentación U-Net</h4>
+
+        <div id="image-overlay-box" class="overlay-box">
+            <i class="corner tl"></i>
+            <i class="corner tr"></i>
+            <i class="corner bl"></i>
+            <i class="corner br"></i>
+
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;align-items:center;">
+
+                <div style="min-width:0;text-align:center;">
+                    <p style="color:white;font-size:12px;">
+                        Imagen original
+                    </p>
+                    <img id="original-img" src=""
+                         alt="Imagen original"
+                         style="width:100%;height:260px;object-fit:contain;">
                 </div>
+
+                <div style="min-width:0;text-align:center;">
+                    <p style="color:white;font-size:12px;">
+                        Segmentación U-Net
+                    </p>
+                    <img id="preview-img" src=""
+                         alt="Imagen segmentada"
+                         style="width:100%;height:260px;object-fit:contain;">
+                </div>
+
             </div>
-            
+        </div>
+    </div>
+</div>
 <!-- =====================================================
      2.1 VALORACIÓN INTEGRAL DEL PACIENTE Y DE LA HERIDA
      ===================================================== -->

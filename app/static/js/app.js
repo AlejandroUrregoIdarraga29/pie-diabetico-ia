@@ -20,6 +20,12 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
         currentSessionId = data.session_id;
         document.getElementById('area-val').textContent = `${data.area_pixels} px²`;
         document.getElementById('session-status').textContent = data.status;
+        const archivoOriginal = document.querySelector('input[type="file"]').files[0];
+
+if (archivoOriginal) {
+    document.getElementById('original-img').src =
+        URL.createObjectURL(archivoOriginal);
+}
         document.getElementById('preview-img').src = data.overlay_image;        document.getElementById('results-card').style.display = 'block';
     }
 });

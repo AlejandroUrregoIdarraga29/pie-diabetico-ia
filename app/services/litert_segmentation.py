@@ -92,18 +92,13 @@ class LiteRTSegmentationService(SegmenterInterface):
 
         area_px = int(np.count_nonzero(mask))
 
-        # 6. Generar overlay rojo compatible con la página de Johan.
-        overlay = image_bgr.copy()
-        overlay[mask == 1] = (0, 0, 255)
-
-        combined = cv2.addWeighted(
-            image_bgr, 0.7, overlay, 0.3, 0
-        )
+               # 6. Generar máscara binaria de la U-Net.
+        # Blanco = lesión predicha; negro = fondo.
+        combined = (mask * 255).astype(np.uint8)
 
         success, buffer = cv2.imencode(".png", combined)
-
         if not success:
-            raise RuntimeError("No se pudo generar el overlay PNG.")
+            raise RuntimeError("No se pudo generar la máscara PNG.")
 
         overlay_base64 = base64.b64encode(buffer).decode("utf-8")
         overlay_uri = f"data:image/png;base64,{overlay_base64}"
