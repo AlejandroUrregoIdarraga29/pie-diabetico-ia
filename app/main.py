@@ -4,6 +4,7 @@ from datetime import datetime
 from app.config import settings
 from app.models.schemas import SessionResponse, DecisionCreate
 from app.services.interfaces import MockSegmenter, MockCommandEmitter
+from app.services.litert_segmentation import LiteRTSegmentationService
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
@@ -11,7 +12,13 @@ import os
 
 app = FastAPI(title="Pie Diabético IA - API Web", version="1.0.0")
 
-segmenter = MockSegmenter()
+segmenter = (
+    MockSegmenter()
+    if settings.USE_MOCKS
+    else LiteRTSegmentationService(settings.MODEL_PATH)
+)
+
+# El hardware permanece simulado por seguridad.
 emitter = MockCommandEmitter()
 sessions_db = {}
 
