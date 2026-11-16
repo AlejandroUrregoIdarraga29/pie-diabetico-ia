@@ -67,8 +67,20 @@
                     <label for="image-file">Imagen de la lesión</label>
                     <input type="file" id="image-file" accept="image/*" required>
                     <small id="file-name">Ningún archivo seleccionado</small>
-                </div>
-                <button type="submit" class="btn btn-primary">Procesar con U-Net</button>
+</div>
+
+<button
+    type="button"
+    id="btn-capturar-camara"
+    class="btn btn-secondary">
+    Capturar con cámara IMX219
+</button>
+
+<small id="camera-feedback" role="status"></small>
+
+<button type="submit" class="btn btn-primary">
+    Procesar con U-Net
+</button>
             </form>
         </section>
 
@@ -499,6 +511,6 @@
             document.getElementById('file-name').textContent = f ? f.name : 'Ningún archivo seleccionado';
         });
     </script>
-    <script src="/static/js/app.js?v=2"></script>
+    <script src="/static/js/app.js?v=3"></script>
 </body>
 </html>

@@ -153,3 +153,60 @@ document.getElementById('btn-save-assessment').addEventListener('click', async (
         button.disabled = false;
     }
 });
+
+// Captura de fotografía con cámara IMX219 de Raspberry Pi
+const cameraButton = document.getElementById('btn-capturar-camara');
+
+if (cameraButton) {
+    cameraButton.addEventListener('click', async () => {
+        const feedback = document.getElementById('camera-feedback');
+        const imageInput = document.getElementById('image-file');
+
+        cameraButton.disabled = true;
+        feedback.textContent = 'Capturando fotografía...';
+
+        try {
+            const response = await fetch('/api/v1/camera/capture', {
+                method: 'GET',
+                cache: 'no-store'
+            });
+
+            if (!response.ok) {
+                throw new Error(
+                    `No se pudo capturar la fotografía (HTTP ${response.status}).`
+                );
+            }
+
+            const imageBlob = await response.blob();
+
+            if (!imageBlob.type.startsWith('image/')) {
+                throw new Error('La cámara no devolvió una imagen válida.');
+            }
+
+            const imageFile = new File(
+                [imageBlob],
+                'captura_imx219.jpg',
+                { type: 'image/jpeg' }
+            );
+
+            const transfer = new DataTransfer();
+            transfer.items.add(imageFile);
+            imageInput.files = transfer.files;
+
+            // Actualizar el nombre del archivo seleccionado.
+            imageInput.dispatchEvent(new Event('change', {
+                bubbles: true
+            }));
+
+            feedback.textContent = 'Fotografía capturada correctamente.';
+            feedback.style.color = '#16803c';
+
+        } catch (error) {
+            feedback.textContent = error.message;
+            feedback.style.color = '#c0392b';
+
+        } finally {
+            cameraButton.disabled = false;
+        }
+    });
+}

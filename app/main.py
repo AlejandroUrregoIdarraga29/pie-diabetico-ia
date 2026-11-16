@@ -8,6 +8,9 @@ from app.services.litert_segmentation import LiteRTSegmentationService
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
+import subprocess
+import shutil
+from fastapi.responses import Response
 
 
 app = FastAPI(title="Pie Diabético IA - API Web", version="1.0.0")
@@ -21,6 +24,46 @@ segmenter = (
 # El hardware permanece simulado por seguridad.
 emitter = MockCommandEmitter()
 sessions_db = {}
+
+@app.get("/api/v1/camera/capture")
+def capture_camera():
+    camera_program = shutil.which("rpicam-still")
+
+    if camera_program is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Cámara no disponible en este equipo."
+        )
+
+    try:
+        result = subprocess.run(
+            [
+                camera_program,
+                "--nopreview",
+                "--timeout", "1000",
+                "--width", "1640",
+                "--height", "1232",
+                "--output", "-"
+            ],
+            capture_output=True,
+            timeout=15,
+            check=True
+        )
+
+        if not result.stdout.startswith(b"\xff\xd8"):
+            raise RuntimeError("La captura no devolvió una imagen JPEG.")
+
+        return Response(
+            content=result.stdout,
+            media_type="image/jpeg",
+            headers={"Cache-Control": "no-store"}
+        )
+
+    except (subprocess.SubprocessError, RuntimeError) as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=f"No se pudo capturar la fotografía: {exc}"
+        )
 
 @app.post("/api/v1/sessions/", response_model=SessionResponse)
 async def create_session(
