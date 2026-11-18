@@ -240,3 +240,18 @@ def controlar_laboratorio(request: LabWebCommand):
         "action": request.action,
         "message": "Orden MQTT enviada; confirmar en el puente"
     }
+
+
+# NOVA_LUZ_STATUS_API
+from app.services.lab_status_service import (
+    iniciar_monitor,
+    obtener_estado,
+)
+
+@app.on_event("startup")
+def iniciar_monitor_nova_luz():
+    iniciar_monitor()
+
+@app.get("/api/v1/pulse/status")
+def consultar_estado_nova_luz():
+    return obtener_estado()

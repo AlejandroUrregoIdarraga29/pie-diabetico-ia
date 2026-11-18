@@ -590,5 +590,64 @@ document.addEventListener("click", async function(event) {
 }, true);
 </script>
 
+
+<!-- NOVA_LUZ_LAB_STATUS_UI -->
+<script>
+(function () {
+    const feedback = document.getElementById("pulse-feedback");
+    if (!feedback) return;
+
+    const estados = {
+        LAB_READY: ["LISTO PARA GENERAR", "#16803c"],
+        LAB_START_SENT: ["INICIO SOLICITADO AL ESP32", "#b7791f"],
+        STOP_CONFIRMED_SERIAL: ["PARADA CONFIRMADA POR ESP32", "#16803c"],
+        LAB_TIME_LIMIT_REACHED: ["ENSAYO FINALIZADO POR TIEMPO", "#5b6f87"],
+        LAB_START_REJECTED: ["INICIO RECHAZADO", "#d92d20"],
+        LAB_BLOCKED: ["LABORATORIO BLOQUEADO", "#d92d20"],
+        STOP_UNCONFIRMED: ["PARADA NO CONFIRMADA", "#d92d20"],
+        SERIAL_ERROR: ["ERROR DE COMUNICACIÓN SERIAL", "#d92d20"],
+        DISCONNECTED: ["MQTT DESCONECTADO", "#d92d20"]
+    };
+
+    async function consultarEstado() {
+        try {
+            const r = await fetch("/api/v1/pulse/status", {
+                cache: "no-store"
+            });
+            if (!r.ok) throw new Error("HTTP " + r.status);
+
+            const data = await r.json();
+
+            if (!data.mqtt_connected) {
+                feedback.textContent = "ESTADO: MQTT DESCONECTADO";
+                feedback.style.color = "#d92d20";
+                return;
+            }
+
+            if (!data.updated_at ||
+                Date.now() / 1000 - data.updated_at > 15) {
+                feedback.textContent = "ESTADO: SIN CONFIRMACIÓN RECIENTE";
+                feedback.style.color = "#b7791f";
+                return;
+            }
+
+            const valor = estados[data.status] || [
+                "ESTADO: " + data.status, "#5b6f87"
+            ];
+
+            feedback.textContent = valor[0];
+            feedback.style.color = valor[1];
+
+        } catch (error) {
+            feedback.textContent = "NO SE PUEDE CONSULTAR EL ESTADO";
+            feedback.style.color = "#d92d20";
+        }
+    }
+
+    consultarEstado();
+    setInterval(consultarEstado, 1000);
+})();
+</script>
+
 </body>
 </html>

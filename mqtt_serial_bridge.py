@@ -139,6 +139,15 @@ def main():
                 if msg.topic != MQTT_LAB_TOPIC:
                     return
 
+                if accion == "GET_STATUS":
+                    if estado["bloqueado"] or not LAB_ENABLED:
+                        publicar("LAB_BLOCKED")
+                    elif estado["activo"]:
+                        publicar("LAB_START_SENT")
+                    else:
+                        publicar("LAB_READY")
+                    return
+
                 if accion == "STOP_LAB":
                     detener("STOP_LAB")
                     return

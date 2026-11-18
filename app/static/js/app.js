@@ -308,14 +308,12 @@ if (cameraButton) {
             actualizarEstado();
         }
 
-        iniciar.addEventListener('click', () => {
-            enviarAccion('START_SIMULATION');
-        });
+        // Los botones físicos de laboratorio se gestionan
+        // exclusivamente desde NOVA_LUZ_LAB_WEB_BUTTONS.
+        iniciar.disabled = false;
+        detener.disabled = false;
 
-        detener.addEventListener('click', () => {
-            enviarAccion('STOP_SIMULATION');
-        });
-
-        actualizarEstado();
+        feedback.textContent = 'Laboratorio: esperando estado del ESP32-S3.';
+        feedback.style.color = '#5b6f87';
     }
 }
