@@ -55,8 +55,35 @@ document.getElementById('btn-approve').addEventListener('click', () => {
 
 document.getElementById('btn-reject').addEventListener('click', () => sendDecision("REJECTED"));
 
-document.getElementById('btn-emergency-stop').addEventListener('click', () => {
-    alert("🚨 PARADA DE EMERGENCIA ENVIADA AL HARDWARE.");
+document.getElementById('btn-emergency-stop').addEventListener('click', async () => {
+    const boton = document.getElementById('btn-emergency-stop');
+
+    boton.disabled = true;
+
+    try {
+        const respuesta = await fetch('/api/v1/pulse/simulation', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({action: 'STOP_SIMULATION'})
+        });
+
+        if (!respuesta.ok) {
+            throw new Error('HTTP ' + respuesta.status);
+        }
+
+        const datos = await respuesta.json();
+
+        if (datos.action !== 'STOP_SIMULATION') {
+            throw new Error('Respuesta inesperada');
+        }
+
+        alert('Solicitud de parada enviada. Verifique la confirmación del ESP32.');
+
+    } catch (error) {
+        alert('ERROR: No se pudo enviar la parada: ' + error.message);
+    } finally {
+        boton.disabled = false;
+    }
 });
 
 
@@ -209,4 +236,86 @@ if (cameraButton) {
             cameraButton.disabled = false;
         }
     });
+}
+
+
+
+
+// NOVA LUZ - SIMULADOR DE PULSOS
+// Comunicación con FastAPI. Hardware deshabilitado.
+{
+    const iniciar = document.getElementById('btn-generar-pulso');
+    const detener = document.getElementById('btn-detener-pulso');
+    const feedback = document.getElementById('pulse-feedback');
+
+    if (iniciar && detener && feedback) {
+        let simulacionActiva = false;
+        let ocupada = false;
+
+        function actualizarEstado() {
+            iniciar.disabled = ocupada || simulacionActiva;
+            detener.disabled = ocupada;
+
+            feedback.textContent = simulacionActiva
+                ? 'SIMULACIÓN ACTIVA — Sin salida física.'
+                : 'SIMULACIÓN DETENIDA — Sin salida física.';
+
+            feedback.style.color = simulacionActiva
+                ? '#16803c'
+                : '#5b6f87';
+        }
+
+        async function enviarAccion(accion) {
+            ocupada = true;
+            actualizarEstado();
+
+            try {
+                const respuesta = await fetch(
+                    '/api/v1/pulse/simulation',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ action: accion })
+                    }
+                );
+
+                if (!respuesta.ok) {
+                    throw new Error('Error HTTP ' + respuesta.status);
+                }
+
+                const datos = await respuesta.json();
+
+                if (!(
+                    (datos.mode === 'SIMULATION' && datos.published === false) ||
+                    (datos.mode === 'MQTT_SIMULATION' && datos.published === true)
+                ) || datos.action !== accion) {
+                    throw new Error('Respuesta de simulación inesperada');
+                }
+
+                simulacionActiva = accion === 'START_SIMULATION';
+
+            } catch (error) {
+                feedback.textContent = 'Error: ' + error.message;
+                feedback.style.color = '#d92d20';
+                return;
+
+            } finally {
+                ocupada = false;
+            }
+
+            actualizarEstado();
+        }
+
+        iniciar.addEventListener('click', () => {
+            enviarAccion('START_SIMULATION');
+        });
+
+        detener.addEventListener('click', () => {
+            enviarAccion('STOP_SIMULATION');
+        });
+
+        actualizarEstado();
+    }
 }

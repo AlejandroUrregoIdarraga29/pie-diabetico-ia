@@ -163,3 +163,80 @@ def get_clinical_assessment(session_id: str):
         "session_id": session_id,
         "clinical_assessment": assessment
     }
+
+
+# NOVA LUZ - API DE SIMULACION DE PULSOS
+# Exclusivamente simulación; no permite activar hardware.
+from typing import Literal
+from pydantic import BaseModel
+from app.services.mqtt_service import publicar_prueba
+
+class PulseSimulationRequest(BaseModel):
+    action: Literal["START_SIMULATION", "STOP_SIMULATION"]
+
+@app.post("/api/v1/pulse/simulation")
+def pulse_simulation(request: PulseSimulationRequest):
+    resultado = publicar_prueba(request.action)
+    return {
+        "message": "Acción de simulación procesada",
+        **resultado
+    }
+
+
+# NOVA_LUZ_LAB_WEB_INTEGRATION
+import os
+import hmac
+import paho.mqtt.publish as lab_publish
+from fastapi import HTTPException
+from pydantic import BaseModel as LabBaseModel
+
+class LabWebCommand(LabBaseModel):
+    action: str
+    pin: str = ""
+
+@app.post("/api/v1/pulse/lab")
+def controlar_laboratorio(request: LabWebCommand):
+    if request.action not in ("START_LAB", "STOP_LAB"):
+        raise HTTPException(status_code=400, detail="Acción inválida")
+
+    if request.action == "START_LAB":
+        habilitado = os.getenv("LAB_WEB_ENABLED") == "true"
+        pin = os.getenv("LAB_WEB_PIN", "")
+        token = os.getenv("LAB_TOKEN", "")
+
+        if not habilitado or not pin or not token:
+            raise HTTPException(
+                status_code=403,
+                detail="Laboratorio web deshabilitado"
+            )
+
+        if not hmac.compare_digest(request.pin, pin):
+            raise HTTPException(
+                status_code=403,
+                detail="PIN incorrecto"
+            )
+
+        mensaje = "START_LAB:" + token
+    else:
+        mensaje = "STOP_LAB"
+
+    try:
+        lab_publish.single(
+            topic="nova_luz/lab/command",
+            payload=mensaje,
+            hostname="192.168.1.53",
+            port=1883,
+            qos=1,
+            retain=False
+        )
+    except Exception as error:
+        raise HTTPException(
+            status_code=503,
+            detail="No se pudo enviar la orden MQTT"
+        ) from error
+
+    return {
+        "ok": True,
+        "action": request.action,
+        "message": "Orden MQTT enviada; confirmar en el puente"
+    }

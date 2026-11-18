@@ -482,6 +482,27 @@
                     <button type="button" id="btn-approve" class="btn btn-success">✅ Aprobar Segmentación</button>
                     <button type="button" id="btn-reject" class="btn btn-warning">❌ Rechazar Segmentación</button>
                 </div>
+                <!-- NOVA LUZ: generador experimental -->
+                <div id="pulse-test-panel" class="form-group"
+                     style="margin-top:24px;padding:20px;border:1px solid #d5e0ec;border-radius:12px;">
+                    <h4>Generador de pulsos bifásicos — Laboratorio</h4>
+                    <p>Prueba de comunicación y simulación. Sin salida física habilitada.</p>
+
+                    <div class="action-buttons">
+                        <button type="button" id="btn-generar-pulso"
+                                class="btn btn-primary" disabled>
+                            ⚡ Generar pulso
+                        </button>
+                        <button type="button" id="btn-detener-pulso"
+                                class="btn btn-danger" disabled>
+                            ■ Detener
+                        </button>
+                    </div>
+
+                    <p id="pulse-feedback" role="status" aria-live="polite">
+                        Estado: desconectado. Control no habilitado.
+                    </p>
+                </div>
             </form>
         </section>
 
@@ -512,5 +533,62 @@
         });
     </script>
     <script src="/static/js/app.js?v=3"></script>
+
+<!-- NOVA_LUZ_LAB_WEB_BUTTONS -->
+<script>
+document.addEventListener("click", async function(event) {
+    const boton = event.target.closest(
+        "#btn-generar-pulso, #btn-detener-pulso"
+    );
+    if (!boton) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    const iniciar = boton.id === "btn-generar-pulso";
+    const estado = document.getElementById("pulse-feedback");
+
+    let pin = "";
+    if (iniciar) {
+        pin = window.prompt("PIN de laboratorio NOVA LUZ:");
+        if (pin === null) return;
+    }
+
+    boton.disabled = true;
+
+    if (estado) {
+        estado.textContent = iniciar
+            ? "Enviando orden de inicio..."
+            : "Enviando parada...";
+    }
+
+    try {
+        const respuesta = await fetch("/api/v1/pulse/lab", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                action: iniciar ? "START_LAB" : "STOP_LAB",
+                pin: pin
+            })
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(datos.detail || "Error de comunicación");
+        }
+
+        if (estado) {
+            estado.textContent =
+                "Orden enviada. Comprueba la confirmación del ESP32.";
+        }
+    } catch (error) {
+        if (estado) estado.textContent = error.message;
+    } finally {
+        boton.disabled = false;
+    }
+}, true);
+</script>
+
 </body>
 </html>
