@@ -238,7 +238,9 @@ def controlar_laboratorio(request: LabWebCommand):
     return {
         "ok": True,
         "action": request.action,
-        "message": "Orden MQTT enviada; confirmar en el puente"
+        "delivery": "MQTT_PUBLISHED",
+        "execution_confirmed": False,
+        "message": "Orden publicada en MQTT. Esperando confirmación del ESP32-S3."
     }
 
 

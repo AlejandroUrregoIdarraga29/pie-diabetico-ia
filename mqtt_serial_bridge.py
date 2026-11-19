@@ -19,7 +19,7 @@ ESP_SERIAL = "5C4C189255"
 LAB_ENABLED = os.getenv("LAB_ENABLED", "false").lower() == "true"
 LAB_TOKEN = os.getenv("LAB_TOKEN", "")
 
-LAB_MAX_DURATION_S = 3.0
+LAB_MAX_DURATION_S = float(os.getenv("LAB_MAX_DURATION_S", "3.0"))
 LAB_HEARTBEAT_INTERVAL_S = 0.5
 
 

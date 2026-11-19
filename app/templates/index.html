@@ -595,7 +595,12 @@ document.addEventListener("click", async function(event) {
 <script>
 (function () {
     const feedback = document.getElementById("pulse-feedback");
+    const botonGenerar = document.getElementById("btn-generar-pulso");
+    const botonDetener = document.getElementById("btn-detener-pulso");
     if (!feedback) return;
+
+    if (botonGenerar) botonGenerar.disabled = true;
+    if (botonDetener) botonDetener.disabled = false;
 
     const estados = {
         LAB_READY: ["LISTO PARA GENERAR", "#16803c"],
@@ -618,6 +623,13 @@ document.addEventListener("click", async function(event) {
 
             const data = await r.json();
 
+            const listo = data.mqtt_connected &&
+                data.status === "LAB_READY" &&
+                data.updated_at &&
+                Date.now() / 1000 - data.updated_at <= 15;
+
+            if (botonGenerar) botonGenerar.disabled = !listo;
+
             if (!data.mqtt_connected) {
                 feedback.textContent = "ESTADO: MQTT DESCONECTADO";
                 feedback.style.color = "#d92d20";
@@ -639,6 +651,7 @@ document.addEventListener("click", async function(event) {
             feedback.style.color = valor[1];
 
         } catch (error) {
+            if (botonGenerar) botonGenerar.disabled = true;
             feedback.textContent = "NO SE PUEDE CONSULTAR EL ESTADO";
             feedback.style.color = "#d92d20";
         }
