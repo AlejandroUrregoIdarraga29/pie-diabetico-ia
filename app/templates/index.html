@@ -482,6 +482,27 @@
                     <button type="button" id="btn-approve" class="btn btn-success">✅ Aprobar Segmentación</button>
                     <button type="button" id="btn-reject" class="btn btn-warning">❌ Rechazar Segmentación</button>
                 </div>
+                <!-- NOVA LUZ: generador experimental -->
+                <div id="pulse-test-panel" class="form-group"
+                     style="margin-top:24px;padding:20px;border:1px solid #d5e0ec;border-radius:12px;">
+                    <h4>Generador de pulsos bifásicos — Laboratorio</h4>
+                    <p>Prueba de comunicación y simulación. Sin salida física habilitada.</p>
+
+                    <div class="action-buttons">
+                        <button type="button" id="btn-generar-pulso"
+                                class="btn btn-primary" disabled>
+                            ⚡ Generar pulso
+                        </button>
+                        <button type="button" id="btn-detener-pulso"
+                                class="btn btn-danger" disabled>
+                            ■ Detener
+                        </button>
+                    </div>
+
+                    <p id="pulse-feedback" role="status" aria-live="polite">
+                        Estado: desconectado. Control no habilitado.
+                    </p>
+                </div>
             </form>
         </section>
 
@@ -512,5 +533,134 @@
         });
     </script>
     <script src="/static/js/app.js?v=3"></script>
+
+<!-- NOVA_LUZ_LAB_WEB_BUTTONS -->
+<script>
+document.addEventListener("click", async function(event) {
+    const boton = event.target.closest(
+        "#btn-generar-pulso, #btn-detener-pulso"
+    );
+    if (!boton) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    const iniciar = boton.id === "btn-generar-pulso";
+    const estado = document.getElementById("pulse-feedback");
+
+    let pin = "";
+    if (iniciar) {
+        pin = window.prompt("PIN de laboratorio NOVA LUZ:");
+        if (pin === null) return;
+    }
+
+    boton.disabled = true;
+
+    if (estado) {
+        estado.textContent = iniciar
+            ? "Enviando orden de inicio..."
+            : "Enviando parada...";
+    }
+
+    try {
+        const respuesta = await fetch("/api/v1/pulse/lab", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                action: iniciar ? "START_LAB" : "STOP_LAB",
+                pin: pin
+            })
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(datos.detail || "Error de comunicación");
+        }
+
+        if (estado) {
+            estado.textContent =
+                "Orden enviada. Comprueba la confirmación del ESP32.";
+        }
+    } catch (error) {
+        if (estado) estado.textContent = error.message;
+    } finally {
+        boton.disabled = false;
+    }
+}, true);
+</script>
+
+
+<!-- NOVA_LUZ_LAB_STATUS_UI -->
+<script>
+(function () {
+    const feedback = document.getElementById("pulse-feedback");
+    const botonGenerar = document.getElementById("btn-generar-pulso");
+    const botonDetener = document.getElementById("btn-detener-pulso");
+    if (!feedback) return;
+
+    if (botonGenerar) botonGenerar.disabled = true;
+    if (botonDetener) botonDetener.disabled = false;
+
+    const estados = {
+        LAB_READY: ["LISTO PARA GENERAR", "#16803c"],
+        LAB_START_SENT: ["INICIO SOLICITADO AL ESP32", "#b7791f"],
+        STOP_CONFIRMED_SERIAL: ["PARADA CONFIRMADA POR ESP32", "#16803c"],
+        LAB_TIME_LIMIT_REACHED: ["ENSAYO FINALIZADO POR TIEMPO", "#5b6f87"],
+        LAB_START_REJECTED: ["INICIO RECHAZADO", "#d92d20"],
+        LAB_BLOCKED: ["LABORATORIO BLOQUEADO", "#d92d20"],
+        STOP_UNCONFIRMED: ["PARADA NO CONFIRMADA", "#d92d20"],
+        SERIAL_ERROR: ["ERROR DE COMUNICACIÓN SERIAL", "#d92d20"],
+        DISCONNECTED: ["MQTT DESCONECTADO", "#d92d20"]
+    };
+
+    async function consultarEstado() {
+        try {
+            const r = await fetch("/api/v1/pulse/status", {
+                cache: "no-store"
+            });
+            if (!r.ok) throw new Error("HTTP " + r.status);
+
+            const data = await r.json();
+
+            const listo = data.mqtt_connected &&
+                data.status === "LAB_READY" &&
+                data.updated_at &&
+                Date.now() / 1000 - data.updated_at <= 15;
+
+            if (botonGenerar) botonGenerar.disabled = !listo;
+
+            if (!data.mqtt_connected) {
+                feedback.textContent = "ESTADO: MQTT DESCONECTADO";
+                feedback.style.color = "#d92d20";
+                return;
+            }
+
+            if (!data.updated_at ||
+                Date.now() / 1000 - data.updated_at > 15) {
+                feedback.textContent = "ESTADO: SIN CONFIRMACIÓN RECIENTE";
+                feedback.style.color = "#b7791f";
+                return;
+            }
+
+            const valor = estados[data.status] || [
+                "ESTADO: " + data.status, "#5b6f87"
+            ];
+
+            feedback.textContent = valor[0];
+            feedback.style.color = valor[1];
+
+        } catch (error) {
+            if (botonGenerar) botonGenerar.disabled = true;
+            feedback.textContent = "NO SE PUEDE CONSULTAR EL ESTADO";
+            feedback.style.color = "#d92d20";
+        }
+    }
+
+    consultarEstado();
+    setInterval(consultarEstado, 1000);
+})();
+</script>
+
 </body>
 </html>

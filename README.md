@@ -241,3 +241,52 @@ Flujo por tarea, una rama por cada una:
 - Indicador visible de "modo simulado" mientras exista el mock.
 - Escala de medición real para el área de la lesión.
 - Evidencias: capturas y video de la demo con el hardware conectado.
+
+---
+
+## Integración experimental NOVA LUZ: MQTT y ESP32-S3
+
+### Arquitectura
+
+La aplicación FastAPI ejecutada en Raspberry Pi integra la segmentación U-Net con un módulo independiente de control experimental.
+
+Flujo de comunicación:
+
+- Interfaz web HTML/JavaScript.
+- API FastAPI.
+- Broker MQTT Mosquitto.
+- Puente Python `mqtt_serial_bridge.py`.
+- Comunicación serial USB a 115200 baudios.
+- ESP32-S3 y DAC MCP4822.
+- Etapa analógica TL074 y carga de laboratorio de 2,2 kΩ.
+
+### Comunicación
+
+Temas MQTT:
+
+- `nova_luz/simulation/event`: eventos de simulación.
+- `nova_luz/lab/command`: órdenes experimentales.
+- `nova_luz/lab/status`: publicación de estados.
+
+El firmware reconoce los comandos seriales `s` (iniciar), `h` (mantener comunicación) y `p` (detener).
+
+### Señal experimental
+
+- Fase A: 200 ms.
+- Intervalo entre fases: 100 ms.
+- Fase B: 400 ms.
+- Reposo: 1300 ms.
+- Periodo de ciclo: 2000 ms.
+- Duración máxima actual de sesión: 3 segundos.
+
+### Validación
+
+Se comprobó la comunicación web–MQTT–ESP32-S3, la confirmación serial de parada, la repetición de ensayos y la observación de la señal bifásica en osciloscopio.
+
+### Limitaciones
+
+Prototipo exclusivamente experimental. No validado para aplicación clínica ni conexión a pacientes.
+
+La confirmación MQTT no equivale a una verificación eléctrica de la salida. Permanecen pendientes la prevención de mensajes repetidos, la validación de parada ante fallos y la protección eléctrica independiente.
+
+Las credenciales deben gestionarse mediante variables de entorno. No publicar PIN ni tokens reales.
