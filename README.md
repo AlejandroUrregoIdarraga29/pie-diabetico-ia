@@ -1,6 +1,7 @@
 
 
 
+
 Nova Luz: Sistema Embebido Inteligente para Heridas Crónicas
 Proyecto del curso Sistemas Embebidos 2026-2 (Universidad Central). Equipo Nova Luz: Alejandro Urrego, Johan González y Jhonny Jiménez.
 
@@ -27,7 +28,7 @@ Aplicación web
 Modelo de datos
 Instrucciones para ejecutar el proyecto
 Metodología de trabajo
-Historial de tareas
+Historial de tareas oficial de Trello
 Tecnologías
 Estado actual y limitaciones
 Trabajo futuro
@@ -141,6 +142,8 @@ La arquitectura U-Net permite realizar segmentación semántica de la lesión y 
 
 La validación experimental del modelo se realizó de manera independiente de las pruebas del generador electrónico.
 
+Las actividades A7 y A8 registran en Trello la captura de imagen y el flujo captura → segmentación → máscara en pantalla. La disponibilidad de estos módulos en el código debe distinguirse de su ejecución efectiva con la cámara y el servicio de IA reales el día de la demostración. El tablero usa la expresión «ESP32-S3-CAM» en A7; el equipo también desarrolló integración con cámara IMX219 en Raspberry. Debe confirmarse el dispositivo utilizado antes de declarar un único hardware de captura.
+
 5. Aplicación web
 Panel de decisión clínica en tres pasos:
 
@@ -242,6 +245,8 @@ La selección utiliza los mismos mecanismos de autorización de laboratorio impl
 
 Los mensajes MQTT confirman la recepción o transmisión de solicitudes, mientras que la comprobación de la forma de onda corresponde a la medición con osciloscopio.
 
+La dirección del broker y la IP de la Raspberry pueden cambiar entre la red doméstica y la red compartida de la universidad. La integración agregó opciones de configuración de MQTT_HOST y MQTT_PORT; las direcciones de la tabla son referencias históricas de una red de pruebas, no una IP permanente. Verificar IP, USB serial y estado del broker en la red activa antes de ejecutar los servicios.
+
 5.4. Pantalla TFT táctil
 Se desarrolló una interfaz TFT local para la Raspberry Pi, utilizando Python.
 
@@ -265,6 +270,8 @@ La interfaz utiliza FastAPI para solicitar las acciones de control. Los comandos
 El perfil CUSTOM permanece como opción visual, pendiente de implementación y validación.
 
 La pantalla incluye controles para GENERAR y DETENER, conservando la lógica de comunicación existente.
+
+En el tablero esta integración corresponde a B7 · Integración de perfiles WEB/TFT, marcada como «Hecho». La descripción de B7 aclara que la sincronización del estado real entre interfaces todavía requiere validación; tener botones o selectores visibles no la demuestra.
 
 5.5. Validación experimental de las señales
 Se realizó una comprobación funcional de ambos perfiles con el osciloscopio, utilizando el montaje experimental y una carga resistiva de 2,2 kΩ.
@@ -355,6 +362,8 @@ cd ~/pie_diabetico_web
 bash ~/.nova_luz_web_start
 Los archivos anteriores son configuraciones locales del equipo, no componentes portables del repositorio.
 
+Nota de reproducción: estos scripts pueden depender de rutas de Python, entornos virtuales y direcciones de red específicas del equipo. Antes de usarlos hay que verificar el intérprete de ~/venv_a6, el acceso a la red/broker y el dispositivo serial real; no deben copiarse credenciales ni asumir que un proceso web iniciado significa MQTT o salida física operativa. La activación de laboratorio requiere autorización explícita.
+
 La pantalla TFT se ejecuta desde el directorio:
 
 /home/alejandro/nova_luz_tft/
@@ -406,31 +415,62 @@ Registro de modificaciones y respaldos.
 Actualización de la documentación técnica.
 Se priorizó conservar las funcionalidades existentes de segmentación, comunicación y control.
 
-9. Historial de tareas
-Carril A: modelo e IA
-Tarea	Rama	Qué se hizo	Archivos clave
-A1	feature/a1-repo-reproducible	Estructura base, rutas relativas y dependencias fijadas para reproducir el entorno	requirements.txt, README.md, .gitignore
-A2	feature/a2-datos	Auditoría y limpieza del dataset: máscaras vacías aisladas (incluida la 0233), datos erróneos clasificados y partición de evaluación definida	clasificar_vacias.py, scripts de partición en data/
-A3	feature/a3-baseline	Entrenamiento y documentación del baseline U-Net, métricas Dice/IoU unificadas y evaluación automatizada con dos corridas	train_baseline.py, evaluate.py, metrics.py
-A4	feature/a4-visualizacion	Diagnóstico visual: original, ground truth y predicción, con los mejores y peores casos	visualize_predictions.py, outputs/plots/
-A5	feature/a5-exportar-tflite	Exportación a LiteRT/TFLite (float32) y comparación numérica contra Keras	export_tflite.py, model_quantized.tflite
-A6	feature/a6-raspberry	Despliegue en Raspberry Pi 3: runtime LiteRT, preprocesamiento ajustado y 100 % de equivalencia en 10 imágenes	test_raspberry_inference.py, reports/a6_performance_report.md
-Carril W: aplicación web
-Tarea	Rama	Qué se hizo	Archivos clave
-W0	feature/w0-adr-web	Decisión de arquitectura (ADR-002): reglas de interfaz, anonimización de pacientes e historial clínico	docs/adr/ADR-002-web-architecture.md
-W1	feature/w1-fastapi-backend	API REST modular con patrón Repository e interfaces que desacoplan IA, base de datos y hardware	app/main.py, app/services/interfaces.py, app/models/schemas.py, tests/test_api.py
-W2	feature/w2-frontend-ui	Interfaz para previsualizar el overlay, ajustar el umbral y enviar la aprobación o el rechazo	app/templates/index.html, app/static/css/style.css, app/static/js/app.js
-W3	feature/w3-frontend	Mejoramiento del frontend: identidad visual Nova Luz, pantalla de carga, encabezado fijo con parada de emergencia y diseño responsivo	index.html, style.css, static/img/logo.jpeg
-Registro de versiones
-Se conservaron los códigos originales de ambas frecuencias en el commit local:
+9. Historial de tareas oficial de Trello
+Fuente: Tablero Nova Luz, exportación del 24 de noviembre de 2026. Se conservaron los 22 identificadores oficiales de los carriles A (A1–A8), B (B1–B7), C (C1–C3) y W (W0, W1, W2a, W3). No existe un «carril E» en esta documentación.
+
+Cómo interpretar el estado: todas las tarjetas codificadas aparecen en la columna Hecho de Trello. Esto refleja el estado registrado en el tablero, no una certificación de que cada ensayo técnico se haya completado. En particular, las descripciones de B6, B7 y C1–C3 conservan verificaciones pendientes. Se indican expresamente para no confundir implementación, prueba reportada y validación demostrada.
+
+Carril A: software, visión e inteligencia artificial
+Tarjeta oficial de Trello	Estado en tablero	Avance documentado y límites de verificación	Rama indicada en README previo
+A1 · Repo reproducible: rutas relativas, README y versiones fijadas	Hecho	Repositorio reproducible, rutas relativas, dependencias y documentación base. El criterio de reproducción en clon limpio está definido en la tarjeta.	feature/a1-repo-reproducible
+A2 · Máscaras vacías, máscara 0233 y partición de evaluación	Hecho	Revisión de 24 máscaras vacías, anomalía 0233, datos de prueba y partición de evaluación; decisiones del dataset documentadas.	feature/a2-datos
+A3 · Documentar el baseline, unificar métricas y repetir una corrida	Hecho	Baseline U-Net, métricas Dice/IoU bajo evaluación homogénea y repetición de entrenamiento. Los resultados numéricos se documentan en la sección 4.	feature/a3-baseline
+A4 · Script de visualización: imagen, máscara real y máscara predicha	Hecho	Visualización comparativa de imagen original, máscara real y predicción, incluidos casos favorables y desfavorables.	feature/a4-visualizacion
+A5 · Exportar el modelo para la Raspberry	Hecho	Exportación del modelo para inferencia en Raspberry mediante LiteRT/TFLite y comparación con Keras.	feature/a5-exportar-tflite
+A6 · Modelo corriendo en la Raspberry sobre imágenes de validación	Hecho	Inferencia del modelo en Raspberry sobre imágenes de validación; revisar los registros de latencia y memoria para citar cifras.	feature/a6-raspberry
+A7 · ESP32-S3-CAM capture y envíe la imagen a la Raspberry	Hecho	Tarjeta de captura y transferencia de imagen a Raspberry. La integración de cámara aparece en el trabajo fusionado; confirmar en la demo la cámara efectivamente conectada.	No especificada en Trello
+A8 · Captura → segmentación → máscara en pantalla	Hecho	Flujo captura → inferencia U-Net → máscara/overlay en pantalla. La integración LiteRT se incorporó en el trabajo de software; verificar el modo real frente al simulado al ejecutarla.	No especificada en Trello
+Carril B: hardware, firmware y FreeRTOS
+Tarjeta oficial de Trello	Estado en tablero	Avance documentado y límites de verificación	Rama indicada en README previo
+B1 · Inventario de hardware y esquema de conexiones (borrador)	Hecho	Inventario y borrador de conexiones: Raspberry, ESP32-S3, cámara, MCP4822, alimentación, instrumentos y carga de ensayo.	No especificada en Trello
+B2 · FreeRTOS verificado en la ESP32-S3: dos tareas y una cola	Hecho	Tareas FreeRTOS de distinta prioridad y comunicación mediante cola; la tarjeta exige registro serial, uso de pila y ensayo reproducible.	No especificada en Trello
+B3 · Diseño de tareas (diagrama) y tarea de seguridad que apaga la salida	Hecho	Diseño de tareas y prioridades, recursos compartidos y lógica de seguridad para apagar la salida. Confirmar la prueba documental de parada.	No especificada en Trello
+B4 · Pulsos con temporización, medidos	Hecho	Firmware integrado con perfiles de 0,5 Hz y 50 Hz; el equipo reportó comprobación con osciloscopio. Falta anexar las capturas instrumentales.	No especificada en Trello
+B5 · Circuito y electrodos con carga de prueba	Hecho	Prueba reportada exclusivamente con carga resistiva de 2,2 kΩ. No se ha acreditado validación de electrodos ni ensayos en personas.	No especificada en Trello
+B6 · Comunicación Raspberry–ESP32 (iniciar y detener)	Hecho	Comunicación Raspberry–ESP32 mediante MQTT y USB serial, con comandos para iniciar/detener. Pendiente evidencia de intercambios completos y parada por pérdida de enlace.	No especificada en Trello
+B7 · Integración de perfiles WEB/TFT	Hecho	Selectores de 0,5 Hz y 50 Hz en WEB/TFT; comunicación vía FastAPI y MQTT reportada. Sincronización real de estados entre WEB y TFT pendiente de validación.	No especificada en Trello
+Carril C: pruebas, seguridad y cierre
+Tarjeta oficial de Trello	Estado en tablero	Avance documentado y límites de verificación	Rama indicada en README previo
+C1 · Pruebas de estrés y parada de emergencia	Hecho	La tarjeta figura en «Hecho», pero su descripción solicita pruebas de estrés, parada de emergencia y fallos de comunicación aún sin evidencia documentada.	No especificada en Trello
+C2 · Diagramas finales y documentación	Hecho	README, arquitectura, comandos y diagramas documentados. Pendiente adjuntar capturas/registros y cerrar la guía de reproducción para terceros.	No especificada en Trello
+C3 · Ensayo de la demo	Hecho	La tarjeta figura en «Hecho», aunque su descripción dice ensayo integral, guion y plan alternativo pendientes.	No especificada en Trello
+Carril W: aplicación web e integración de interfaz
+Tarjeta oficial de Trello	Estado en tablero	Avance documentado y límites de verificación	Rama indicada en README previo
+W0 · Decisión de alcance de la web	Hecho	Alcance funcional, usuario objetivo, anonimización y criterios de operación de la web establecidos mediante ADR.	feature/w0-adr-web
+W1 · Servicio en la Raspberry (API)	Hecho	Servicio FastAPI, sesiones, decisiones, estado y control desacoplados mediante interfaces; entorno configurable y pruebas de API.	feature/w1-fastapi-backend
+W2a · Interfaz: sesión y decisión	Hecho	Interfaz de sesión y decisión, superposición de máscara, notas, umbral y controles visibles. Conservar la denominación oficial W2a, no W2.	feature/w2-frontend-ui
+W3 – Mejoramiento del frontend	Hecho	Mejoras del frontend: identidad visual, pantalla de carga, cabecera fija, parada visible y adaptación a móvil.	feature/w3-frontend
+Otras actividades que también aparecen en el tablero
+Además de los 22 códigos anteriores, la exportación contiene dos tarjetas transversales en «Hecho»: Añadir roles y tareas y Mirar diferente bases de datos para realcion con el tema.... No se les asignan códigos nuevos.
+
+La distribución de responsabilidades registrada en las etiquetas del tablero es: Johan (software, visión e integración), Alejandro (firmware y FreeRTOS) y Jhonny (hardware y seguridad eléctrica).
+
+Entregables técnicos e integración entre carriles
+Segmentación (A/W): modelo U-Net, exportación LiteRT/TFLite, captura de imagen, visualización de máscara y aplicación FastAPI para gestionar sesiones y decisiones. La ejecución en modo real depende de la configuración desplegada; un resultado en modo simulado no acredita inferencia real.
+Electrónica (B): ESP32-S3, MCP4822 por SPI, perfiles nominales 0,5/50 Hz, comandos seriales 0, 5, s, p, h, supervisión temporal y ensayos limitados a carga resistiva.
+Comunicación (B/W): API → MQTT Mosquitto → mqtt_serial_bridge.py en Raspberry → USB serial → ESP32-S3; topic de órdenes nova_luz/lab/command. Una conexión de red o un mensaje MQTT por sí solos no prueban la generación de una señal eléctrica.
+Interfaces (B7/W): página web y pantalla TFT para seleccionar perfil y consultar controles/estados. El cierre de sincronización WEB/TFT/ESP32 debe comprobarse con los tres componentes ejecutándose.
+Cierre (C): el README documenta arquitectura, funcionamiento y límites; faltan evidencias finales de seguridad, estrés, confirmación de estados, capturas instrumentales y ensayo integral según las propias descripciones de Trello.
+Criterio de seguridad del proyecto: ninguna salida de este prototipo se considera validada para uso sobre personas. Las pruebas del generador se limitan al banco con carga resistiva y autorización de laboratorio.
+
+Registro de versiones e integración de GitHub
+Se conservaron los códigos originales de ambas frecuencias en el registro histórico:
 
 40d8687 — backup: conservar firmware original de 0.5 Hz y 50 Hz
 
-Rama de trabajo de integración:
+Rama de integración electrónica: feature/nova-luz-mqtt-pulsos.
 
-feature/nova-luz-mqtt-pulsos
-
-La incorporación final de los cambios debe realizarse mediante commit, push y Pull Request, respetando el flujo de trabajo establecido por el equipo.
+El Pull Request #12 — Integración NOVA LUZ: ESP32-S3, pulsos bifásicos y comunicación MQTT se fusionó con main; incluye avances de software, cámara, segmentación y comunicación. La existencia del merge no reemplaza la verificación final sobre la Raspberry y los instrumentos de laboratorio.
 
 10. Tecnologías
 Área	Herramientas
@@ -447,7 +487,7 @@ Validación	Osciloscopio, multímetro, carga resistiva de 2,2 kΩ
 Documentación	Markdown, Mermaid, ADR
 11. Estado actual y limitaciones
 11.1. Segmentación e inteligencia artificial
-La segmentación de la web utiliza un servicio simulado (MockSegmentationService): devuelve un recuadro fijo y un área constante. La U-Net real ya está exportada y validada en Raspberry Pi, pero aún no está inyectada en la API.
+La U-Net real fue exportada a LiteRT/TFLite y se incorporó trabajo de integración con la API y el flujo A8. Antes de la demostración se debe comprobar si la instancia ejecutada usa el servicio real o MockSegmentationService, porque la selección depende de la configuración efectiva (USE_MOCKS) y del despliegue de Raspberry; un recuadro simulado no se debe presentar como inferencia real.
 El slider de umbral se envía junto con la decisión; todavía no vuelve a segmentar la imagen.
 La integración automática entre aprobación clínica y generación de pulsos permanece pendiente.
 El área se mide en píxeles de la imagen redimensionada, sin escala real (cm/píxel).
@@ -465,7 +505,7 @@ La aplicación web incorpora selección de perfiles y control de generación.
 FastAPI dispone de acciones para seleccionar perfil, generar y detener.
 El puente MQTT permite traducir las solicitudes autorizadas a comandos seriales.
 La pantalla TFT incorpora visualización de perfiles y funciones de control.
-La sincronización integral y confirmación de estados entre WEB, TFT y ESP32-S3 requiere cierre de verificación.
+La sincronización integral y confirmación de estados entre WEB, TFT y ESP32-S3 requiere cierre de verificación. Este pendiente también consta en la descripción oficial de la tarjeta B7, aunque la columna de Trello sea «Hecho».
 Los estados de comunicación publicados por MQTT no sustituyen la medición física de la señal.
 Las variables de autorización deben conservarse correctamente durante el inicio de los servicios.
 Los botones GENERAR y DETENER corresponden al módulo experimental de laboratorio; la integración de la parada de emergencia global de la aplicación debe verificarse por separado.
@@ -489,9 +529,9 @@ Registrar medidas cuantitativas de amplitud, frecuencia, ancho de pulso, corrien
 Evaluar la respuesta del circuito de acondicionamiento y de la etapa analógica.
 Incorporar el firmware integrado definitivo al repositorio.
 Completar la documentación de interfaces, firmware y comunicación.
-Actualizar las actividades y evidencias del equipo en Trello.
-Registrar capturas, fotografías del osciloscopio y video de demostración.
-Finalizar el Pull Request de integración y realizar la revisión correspondiente antes del merge a main.
+Mantener la trazabilidad entre las 22 tarjetas oficiales A/B/C/W de Trello y la evidencia de GitHub, sin crear identificadores ajenos al tablero.
+Adjuntar capturas instrumentales, registros de pruebas de estrés/parada, evidencia de sincronización WEB/TFT y video del ensayo de demostración (tarjetas C1–C3).
+Verificar en Raspberry y banco de pruebas los cambios del PR #12 ya fusionado en main, sin sobrescribir las configuraciones locales ni las modificaciones no confirmadas.
 Conclusión
 El proyecto NOVA LUZ ha avanzado desde el desarrollo independiente de un modelo de segmentación de úlceras y una aplicación web hacia la integración de un sistema embebido que combina inteligencia artificial, comunicación MQTT, control mediante Raspberry Pi y generación experimental de señales bifásicas.
 
