@@ -67,8 +67,20 @@
                     <label for="image-file">Imagen de la lesión</label>
                     <input type="file" id="image-file" accept="image/*" required>
                     <small id="file-name">Ningún archivo seleccionado</small>
-                </div>
-                <button type="submit" class="btn btn-primary">Procesar con U-Net</button>
+</div>
+
+<button
+    type="button"
+    id="btn-capturar-camara"
+    class="btn btn-primary">
+    Capturar con cámara IMX219
+</button>
+
+<small id="camera-feedback" role="status"></small>
+
+<button type="submit" class="btn btn-primary">
+    Procesar con U-Net
+</button>
             </form>
         </section>
 
@@ -87,14 +99,369 @@
             </div>
 
             <div class="viewer-container">
-                <div class="image-wrapper">
-                    <h4>Vista Segmentada (Overlay U-Net)</h4>
-                    <div id="image-overlay-box" class="overlay-box">
-                        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-                        <img id="preview-img" src="" alt="Previsualización">
-                    </div>
+    <div class="image-wrapper">
+        <h4>Comparación de Segmentación U-Net</h4>
+
+        <div id="image-overlay-box" class="overlay-box">
+            <i class="corner tl"></i>
+            <i class="corner tr"></i>
+            <i class="corner bl"></i>
+            <i class="corner br"></i>
+
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;align-items:center;">
+
+                <div style="min-width:0;text-align:center;">
+                    <p style="color:white;font-size:12px;">
+                        Imagen original
+                    </p>
+                    <img id="original-img" src=""
+                         alt="Imagen original"
+                         style="width:100%;height:260px;object-fit:contain;">
                 </div>
+
+                <div style="min-width:0;text-align:center;">
+                    <p style="color:white;font-size:12px;">
+                        Segmentación U-Net
+                    </p>
+                    <img id="preview-img" src=""
+                         alt="Imagen segmentada"
+                         style="width:100%;height:260px;object-fit:contain;">
+                </div>
+
             </div>
+        </div>
+    </div>
+</div>
+<!-- =====================================================
+     2.1 VALORACIÓN INTEGRAL DEL PACIENTE Y DE LA HERIDA
+     ===================================================== -->
+<section class="clinical-assessment" id="clinical-assessment">
+
+    <h4>
+        <span class="h-num">2.1</span>
+        Valoración Integral del Paciente y de la Herida
+    </h4>
+
+    <p>
+        Registre los hallazgos evaluados. Los campos sin información
+        se consideran no evaluados. La segmentación por IA no
+        sustituye la valoración clínica.
+    </p>
+
+    <form id="clinical-form" onsubmit="event.preventDefault();">
+
+        <!-- HISTORIA DEL PACIENTE -->
+        <fieldset>
+            <legend>Historia del paciente y factores sistémicos</legend>
+
+            <div class="clinical-grid">
+
+                <div class="clinical-field">
+                    <label for="ca-age">Edad (años)</label>
+                    <input id="ca-age" name="age" type="number"
+                           min="0" max="120" placeholder="Ej. 65">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-comorbidities">Comorbilidades</label>
+                    <input id="ca-comorbidities" name="comorbidities"
+                           type="text"
+                           placeholder="Antecedentes médicos">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-nutritional">Estado nutricional</label>
+                    <select id="ca-nutritional" name="nutritional_status">
+                        <option value="">No evaluado</option>
+                        <option value="Adecuado">Adecuado</option>
+                        <option value="Riesgo nutricional">Riesgo nutricional</option>
+                        <option value="Desnutrición">Desnutrición</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-immunosuppressive">Tratamiento inmunosupresor</label>
+                    <select id="ca-immunosuppressive"
+                            name="immunosuppressive_treatment">
+                        <option value="">No evaluado</option>
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-stress">Nivel de estrés</label>
+                    <select id="ca-stress" name="stress_level">
+                        <option value="">No evaluado</option>
+                        <option value="Bajo">Bajo</option>
+                        <option value="Moderado">Moderado</option>
+                        <option value="Alto">Alto</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-adherence">Adherencia al tratamiento</label>
+                    <select id="ca-adherence" name="treatment_adherence">
+                        <option value="">No evaluado</option>
+                        <option value="Adecuada">Adecuada</option>
+                        <option value="Parcial">Parcial</option>
+                        <option value="No adecuada">No adecuada</option>
+                    </select>
+                </div>
+
+            </div>
+        </fieldset>
+
+        <!-- VALORACIÓN VASCULAR Y NEUROLÓGICA -->
+        <fieldset>
+            <legend>Evaluación vascular y neurológica</legend>
+
+            <div class="clinical-grid">
+
+                <div class="clinical-field">
+                    <label for="ca-sensitivity">Sensibilidad del pie</label>
+                    <select id="ca-sensitivity" name="sensitivity">
+                        <option value="">No evaluado</option>
+                        <option value="Conservada">Conservada</option>
+                        <option value="Disminuida">Disminuida</option>
+                        <option value="Ausente">Ausente</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-circulation">Evaluación de circulación</label>
+                    <select id="ca-circulation" name="circulation">
+                        <option value="">No evaluado</option>
+                        <option value="Sin alteraciones documentadas">
+                            Sin alteraciones documentadas
+                        </option>
+                        <option value="Alteración sospechada">
+                            Alteración sospechada
+                        </option>
+                        <option value="Alteración confirmada">
+                            Alteración confirmada
+                        </option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-temperature">Temperatura local (°C)</label>
+                    <input id="ca-temperature"
+                           name="local_temperature_c"
+                           type="number" step="0.1"
+                           placeholder="Ej. 35.8">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-pain">Nivel de dolor (0 a 10)</label>
+                    <input id="ca-pain" name="pain_level"
+                           type="number" min="0" max="10"
+                           placeholder="No evaluado">
+                </div>
+
+            </div>
+        </fieldset>
+
+        <!-- CARACTERÍSTICAS DE LA HERIDA -->
+        <fieldset>
+            <legend>Características de la herida</legend>
+
+            <div class="clinical-grid">
+
+                <div class="clinical-field">
+                    <label for="ca-location">Ubicación anatómica</label>
+                    <input id="ca-location" name="wound_location"
+                           type="text"
+                           placeholder="Ej. Talón derecho">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-depth">Profundidad medida (mm)</label>
+                    <input id="ca-depth" name="wound_depth_mm"
+                           type="number" min="0" step="0.1"
+                           placeholder="No medida">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-length">Longitud medida (mm)</label>
+                    <input id="ca-length" name="wound_length_mm"
+                           type="number" min="0" step="0.1"
+                           placeholder="No medida">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-width">Ancho medido (mm)</label>
+                    <input id="ca-width" name="wound_width_mm"
+                           type="number" min="0" step="0.1"
+                           placeholder="No medido">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-bed">Tejido del lecho</label>
+                    <input id="ca-bed" name="wound_bed"
+                           type="text"
+                           placeholder="Granulación, esfacelo, etc.">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-edges">Bordes de la herida</label>
+                    <input id="ca-edges" name="wound_edges"
+                           type="text"
+                           placeholder="Descripción de bordes">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-necrosis">Presencia de necrosis</label>
+                    <select id="ca-necrosis" name="necrosis">
+                        <option value="">No evaluado</option>
+                        <option value="true">Presente</option>
+                        <option value="false">Ausente</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-redness">Enrojecimiento alrededor</label>
+                    <select id="ca-redness" name="surrounding_redness">
+                        <option value="">No evaluado</option>
+                        <option value="true">Presente</option>
+                        <option value="false">Ausente</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-maceration">Maceración de la piel</label>
+                    <select id="ca-maceration" name="maceration">
+                        <option value="">No evaluado</option>
+                        <option value="true">Presente</option>
+                        <option value="false">Ausente</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <p class="clinical-note">
+                Las dimensiones físicas en milímetros deben medirse
+                o calcularse mediante una fotografía calibrada.
+                La U-Net actualmente entrega el área en píxeles.
+            </p>
+        </fieldset>
+
+        <!-- EXUDACIÓN -->
+        <fieldset>
+            <legend>Exudación y olor</legend>
+
+            <div class="clinical-grid">
+
+                <div class="clinical-field">
+                    <label for="ca-exudate-amount">Cantidad de exudado</label>
+                    <select id="ca-exudate-amount" name="exudate_amount">
+                        <option value="">No evaluado</option>
+                        <option value="Ausente">Ausente</option>
+                        <option value="Escasa">Escasa</option>
+                        <option value="Moderada">Moderada</option>
+                        <option value="Abundante">Abundante</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-exudate-type">Tipo de exudado</label>
+                    <select id="ca-exudate-type" name="exudate_type">
+                        <option value="">No evaluado</option>
+                        <option value="Seroso">Seroso</option>
+                        <option value="Sanguinolento">Sanguinolento</option>
+                        <option value="Serosanguinolento">
+                            Serosanguinolento
+                        </option>
+                        <option value="Purulento">Purulento</option>
+                    </select>
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-exudate-color">Color del exudado</label>
+                    <input id="ca-exudate-color"
+                           name="exudate_color" type="text"
+                           placeholder="Describa el color">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-exudate-consistency">Consistencia</label>
+                    <input id="ca-exudate-consistency"
+                           name="exudate_consistency" type="text"
+                           placeholder="Describa la consistencia">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-odor">Olor de la herida</label>
+                    <select id="ca-odor" name="odor">
+                        <option value="">No evaluado</option>
+                        <option value="Ausente">Ausente</option>
+                        <option value="Presente">Presente</option>
+                    </select>
+                </div>
+
+            </div>
+        </fieldset>
+
+        <!-- SEGUIMIENTO -->
+        <fieldset>
+            <legend>Valoración y seguimiento</legend>
+
+            <div class="clinical-grid">
+
+                <div class="clinical-field">
+                    <label for="ca-infection">Signos de infección observados</label>
+                    <input id="ca-infection" name="infection_signs"
+                           type="text"
+                           placeholder="Describa los hallazgos">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-classification">Clasificación clínica</label>
+                    <input id="ca-classification"
+                           name="wound_classification"
+                           type="text"
+                           placeholder="Escala y grado documentados">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-duration">Duración del tratamiento (días)</label>
+                    <input id="ca-duration"
+                           name="treatment_duration_days"
+                           type="number" min="0"
+                           placeholder="No registrada">
+                </div>
+
+                <div class="clinical-field">
+                    <label for="ca-cost">Costo del tratamiento (COP)</label>
+                    <input id="ca-cost" name="treatment_cost"
+                           type="number" min="0" step="0.01"
+                           placeholder="No registrado">
+                </div>
+
+            </div>
+
+            <div class="clinical-field" style="margin-top:16px;">
+                <label for="ca-notes">Observaciones clínicas</label>
+                <textarea id="ca-notes" name="clinical_notes"
+                          rows="3"
+                          placeholder="Observaciones verificadas"></textarea>
+            </div>
+        </fieldset>
+
+        <!-- GUARDADO INDEPENDIENTE DEL TRATAMIENTO -->
+        <button type="button"
+                class="btn btn-primary"
+                id="btn-save-assessment">
+            Guardar valoración clínica
+        </button>
+
+        <p id="assessment-feedback"
+           role="status"
+           aria-live="polite"></p>
+
+    </form>
+</section>
+<!-- FIN DE LA SECCIÓN 2.1 -->
 
             <!-- Formulario de Validación y Parámetros -->
             <form id="decision-form" class="decision-zone">
@@ -114,6 +481,27 @@
                 <div class="action-buttons">
                     <button type="button" id="btn-approve" class="btn btn-success">✅ Aprobar Segmentación</button>
                     <button type="button" id="btn-reject" class="btn btn-warning">❌ Rechazar Segmentación</button>
+                </div>
+                <!-- NOVA LUZ: generador experimental -->
+                <div id="pulse-test-panel" class="form-group"
+                     style="margin-top:24px;padding:20px;border:1px solid #d5e0ec;border-radius:12px;">
+                    <h4>Generador de pulsos bifásicos — Laboratorio</h4>
+                    <p>Prueba de comunicación y simulación. Sin salida física habilitada.</p>
+
+                    <div class="action-buttons">
+                        <button type="button" id="btn-generar-pulso"
+                                class="btn btn-primary" disabled>
+                            ⚡ Generar pulso
+                        </button>
+                        <button type="button" id="btn-detener-pulso"
+                                class="btn btn-danger" disabled>
+                            ■ Detener
+                        </button>
+                    </div>
+
+                    <p id="pulse-feedback" role="status" aria-live="polite">
+                        Estado: desconectado. Control no habilitado.
+                    </p>
                 </div>
             </form>
         </section>
@@ -144,6 +532,135 @@
             document.getElementById('file-name').textContent = f ? f.name : 'Ningún archivo seleccionado';
         });
     </script>
-    <script src="/static/js/app.js"></script>
+    <script src="/static/js/app.js?v=3"></script>
+
+<!-- NOVA_LUZ_LAB_WEB_BUTTONS -->
+<script>
+document.addEventListener("click", async function(event) {
+    const boton = event.target.closest(
+        "#btn-generar-pulso, #btn-detener-pulso"
+    );
+    if (!boton) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    const iniciar = boton.id === "btn-generar-pulso";
+    const estado = document.getElementById("pulse-feedback");
+
+    let pin = "";
+    if (iniciar) {
+        pin = window.prompt("PIN de laboratorio NOVA LUZ:");
+        if (pin === null) return;
+    }
+
+    boton.disabled = true;
+
+    if (estado) {
+        estado.textContent = iniciar
+            ? "Enviando orden de inicio..."
+            : "Enviando parada...";
+    }
+
+    try {
+        const respuesta = await fetch("/api/v1/pulse/lab", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                action: iniciar ? "START_LAB" : "STOP_LAB",
+                pin: pin
+            })
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(datos.detail || "Error de comunicación");
+        }
+
+        if (estado) {
+            estado.textContent =
+                "Orden enviada. Comprueba la confirmación del ESP32.";
+        }
+    } catch (error) {
+        if (estado) estado.textContent = error.message;
+    } finally {
+        boton.disabled = false;
+    }
+}, true);
+</script>
+
+
+<!-- NOVA_LUZ_LAB_STATUS_UI -->
+<script>
+(function () {
+    const feedback = document.getElementById("pulse-feedback");
+    const botonGenerar = document.getElementById("btn-generar-pulso");
+    const botonDetener = document.getElementById("btn-detener-pulso");
+    if (!feedback) return;
+
+    if (botonGenerar) botonGenerar.disabled = true;
+    if (botonDetener) botonDetener.disabled = false;
+
+    const estados = {
+        LAB_READY: ["LISTO PARA GENERAR", "#16803c"],
+        LAB_START_SENT: ["INICIO SOLICITADO AL ESP32", "#b7791f"],
+        STOP_CONFIRMED_SERIAL: ["PARADA CONFIRMADA POR ESP32", "#16803c"],
+        LAB_TIME_LIMIT_REACHED: ["ENSAYO FINALIZADO POR TIEMPO", "#5b6f87"],
+        LAB_START_REJECTED: ["INICIO RECHAZADO", "#d92d20"],
+        LAB_BLOCKED: ["LABORATORIO BLOQUEADO", "#d92d20"],
+        STOP_UNCONFIRMED: ["PARADA NO CONFIRMADA", "#d92d20"],
+        SERIAL_ERROR: ["ERROR DE COMUNICACIÓN SERIAL", "#d92d20"],
+        DISCONNECTED: ["MQTT DESCONECTADO", "#d92d20"]
+    };
+
+    async function consultarEstado() {
+        try {
+            const r = await fetch("/api/v1/pulse/status", {
+                cache: "no-store"
+            });
+            if (!r.ok) throw new Error("HTTP " + r.status);
+
+            const data = await r.json();
+
+            const listo = data.mqtt_connected &&
+                data.status === "LAB_READY" &&
+                data.updated_at &&
+                Date.now() / 1000 - data.updated_at <= 15;
+
+            if (botonGenerar) botonGenerar.disabled = !listo;
+
+            if (!data.mqtt_connected) {
+                feedback.textContent = "ESTADO: MQTT DESCONECTADO";
+                feedback.style.color = "#d92d20";
+                return;
+            }
+
+            if (!data.updated_at ||
+                Date.now() / 1000 - data.updated_at > 15) {
+                feedback.textContent = "ESTADO: SIN CONFIRMACIÓN RECIENTE";
+                feedback.style.color = "#b7791f";
+                return;
+            }
+
+            const valor = estados[data.status] || [
+                "ESTADO: " + data.status, "#5b6f87"
+            ];
+
+            feedback.textContent = valor[0];
+            feedback.style.color = valor[1];
+
+        } catch (error) {
+            if (botonGenerar) botonGenerar.disabled = true;
+            feedback.textContent = "NO SE PUEDE CONSULTAR EL ESTADO";
+            feedback.style.color = "#d92d20";
+        }
+    }
+
+    consultarEstado();
+    setInterval(consultarEstado, 1000);
+})();
+</script>
+
 </body>
 </html>
