@@ -657,8 +657,6 @@ Rama de trabajo de integración:
 
 La incorporación final de los cambios debe realizarse mediante commit, push y Pull Request, respetando el flujo de trabajo establecido por el equipo.
 
----
-
 ## 10. Tecnologías
 
 | Área | Herramientas |
