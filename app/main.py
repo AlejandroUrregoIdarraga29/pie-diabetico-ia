@@ -224,8 +224,8 @@ def controlar_laboratorio(request: LabWebCommand):
         lab_publish.single(
             topic="nova_luz/lab/command",
             payload=mensaje,
-            hostname="192.168.1.53",
-            port=1883,
+            hostname=settings.MQTT_HOST,
+            port=settings.MQTT_PORT,
             qos=1,
             retain=False
         )

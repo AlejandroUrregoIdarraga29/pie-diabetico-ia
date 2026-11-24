@@ -7,14 +7,14 @@ import paho.mqtt.client as mqtt
 import serial
 from serial.tools import list_ports
 
-MQTT_HOST = "192.168.1.53"
-MQTT_PORT = 1883
+MQTT_HOST = os.getenv("MQTT_HOST", "192.168.1.53")
+MQTT_PORT = int(os.getenv("MQTT_PORT", "1883"))
 
 MQTT_SIM_TOPIC = "nova_luz/simulation/event"
 MQTT_LAB_TOPIC = "nova_luz/lab/command"
 MQTT_STATUS_TOPIC = "nova_luz/lab/status"
 
-ESP_SERIAL = "5C4C189255"
+ESP_SERIAL = os.getenv("ESP_SERIAL", "5C4C189255")
 
 LAB_ENABLED = os.getenv("LAB_ENABLED", "false").lower() == "true"
 LAB_TOKEN = os.getenv("LAB_TOKEN", "")
